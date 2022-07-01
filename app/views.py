@@ -49,7 +49,7 @@ def facebook_messenger_webhook(request):
         if request.GET["hub.mode"] == "subscribe" and request.GET["hub.challenge"]:
             if not request.GET["hub.verify_token"] == verify_token:
                 return "Verification token missmatch", 403
-            return request.args['hub.challenge'], 200
+            return request.GET['hub.challenge'], 200
         return "Hello world", 200
 
     if request.method == 'POST':
