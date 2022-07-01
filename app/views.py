@@ -45,33 +45,12 @@ def login(request):
 
 def facebook_messenger_webhook(request):
     if request.method == 'GET':
-        #do something.....
-        VERIFY_TOKEN = FBMessenger.get_verify_token()
-
-        if 'hub.mode' in request.args:
-            mode = request.args.get('hub.mode')
-            print(mode)
-        if 'hub.verify_token' in request.args:
-            token = request.args.get('hub.verify_token')
-            print(token)
-        if 'hub.challenge' in request.args:
-            challenge = request.args.get('hub.challenge')
-            print(challenge)
-
-        if 'hub.mode' in request.args and 'hub.verify_token' in request.args:
-            mode = request.args.get('hub.mode')
-            token = request.args.get('hub.verify_token')
-
-            if mode == 'subscribe' and token == VERIFY_TOKEN:
-                print('WEBHOOK VERIFIED')
-
-                challenge = request.args.get('hub.challenge')
-
-                return challenge, 200
-            else:
-                return 'ERROR', 403
-
-        return 'SOMETHING', 200
+        verify_token = FBMessenger.get_verify_token()
+        if request.args.get("hub.mode") == "subscribe" and request.args.get("hub.challenge"):
+            if not request.args.get("hub.verify_token") == verify_token:
+                return "Verification token missmatch", 403
+            return request.args['hub.challenge'], 200
+        return "Hello world", 200
 
     if request.method == 'POST':
         #do something.....
