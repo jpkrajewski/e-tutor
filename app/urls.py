@@ -9,5 +9,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('social-auth/', include('social_django.urls', namespace="social")),
     path('finish_task/<int:task_id>', views.finish_task, name='finish_task'),
-    path('facebook_messenger_webhook/', views.facebook_messenger_webhook, name='facebook_messenger_webhook'),
+    path('fb_webhook/', views.facebook_messenger_webhook, name='facebook_messenger_webhook'),
 ]
