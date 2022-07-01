@@ -1,11 +1,14 @@
 from django.forms import ModelForm
-from .models import Task
+from .models import Task, Student
 
 
 class TaskForm(ModelForm):
     class Meta:
         model = Task
         fields = ['description']
-        labels = {
-            "description": "Description",
-        }
+
+
+class StudentForm(ModelForm):
+    class Meta:
+        model = Student
+        fields = '__all__'

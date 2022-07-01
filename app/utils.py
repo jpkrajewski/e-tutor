@@ -1,34 +1,50 @@
 import requests
 from django.conf import settings
+from django.http import HttpResponse
+from .models import FacebookMessage
+import json
 
 
 class FacebookMessengerAPI:
+    """
+    Class used to handle everything related to Facebook Messanger API
+    """
 
     @classmethod
-    def get_verify_token(cls):
-        return settings.FACEBOOK_PAGE_VERIFY_TOKEN
+    def validate_webhook(cls, request):
+        """
+        We verify if GET request has valid verifying token. Only Facebook has good token.
+        Then if we confirm that the facebook is sending request we return challenge from
+        request because they want it back.
+
+        :param request: HTTP request
+        :return: HTTP response
+        """
+        if not request.GET["hub.verify_token"] == settings.FACEBOOK_PAGE_VERIFY_TOKEN:
+            return HttpResponse(403)
+        return HttpResponse(request.GET['hub.challenge'], 200)
 
     @classmethod
-    def call_send(cls, sender_psid, response):
+    def call_send(cls, sender_psid, message):
         page_access_token = settings.FACEBOOK_PAGE_ACCESS_TOKEN
         payload = {
             'recipient': {'id': sender_psid},
-            'message': response,
-            'messaging_type': 'RESPONSE'
+            'message': message,
+            'messaging_type': 'MESSAGE_TAG'
         }
         headers = {'content-type': 'application/json'}
         url = 'https://graph.facebook.com/v10.0/me/messages?access_token={}'.format(page_access_token)
-        r = requests.post(url, json=payload, headers=headers)
-        print(r.text)
+        requests.post(url, json=payload, headers=headers)
 
     @classmethod
-    def handle_message(cls, sender_psid, received_message):
-        # check if received message contains text
-        if 'text' in received_message:
-
-            response = {"text": 'You just sent: {}'.format(received_message['text'])}
-
-            cls.call_send(sender_psid, response)
-        else:
-            response = {"text": 'This chatbot only accepts text messages'}
-            cls.call_send(sender_psid, response)
+    def handle_post_request(cls, request):
+        body = json.loads(request.data.decode('utf-8'))
+        if body['recipient'] == settings.FACEBOOK_PAGE_ACCESS_TOKEN:
+            fb_msg = FacebookMessage.objects.get(sender_psid=body['sender'])
+            if not fb_msg:
+                new_msg = FacebookMessage(message=body['message']['text'],
+                                          sender_psid=body['sender'],
+                                          request_data=body)
+                new_msg.save()
+            return HttpResponse('OK', 200)
+        return HttpResponse(403)
