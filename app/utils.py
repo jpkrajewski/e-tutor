@@ -69,7 +69,7 @@ class FacebookMessengerAPI:
         #                           request_data=post_request)
         # new_msg.save()
 
-        new_msg = FacebookMessage(full_name='1', message='1', sender_psid='1', request=post_request)
+        new_msg = FacebookMessage(full_name='1', message='1', sender_psid='1', request_data=post_request)
         new_msg.save()
 
 
