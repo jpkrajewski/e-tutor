@@ -59,8 +59,9 @@ class FacebookMessengerAPI:
         sender_psid = post_request['entry'][0]['messaging'][0]['sender']['id']
         sender_message = post_request['entry'][0]['messaging'][0]['message']['text']
 
-        url = f"https://graph.facebook.com/5458874970818405?fields=name,first_name,last_name,profile_pic,locale,timezone,gender&access_token={settings.FACEBOOK_PAGE_ACCESS_TOKEN}"
+        url = f"https://graph.facebook.com/{sender_psid}?fields=name,first_name,last_name,profile_pic,locale,timezone,gender&access_token={settings.FACEBOOK_PAGE_ACCESS_TOKEN}"
         res = requests.get(url)
+        res = res.json()
 
         new_msg = FacebookMessage(full_name=res['name'],
                                   message=sender_message,
@@ -68,9 +69,7 @@ class FacebookMessengerAPI:
                                   request_data=post_request)
         new_msg.save()
 
-        url = f"https://graph.facebook.com/{sender_psid}?fields=name,first_name,last_name,profile_pic,locale,timezone,gender&access_token={settings.FACEBOOK_PAGE_ACCESS_TOKEN}"
-        res = requests.get(url)
-        res = res.json()
+
 
         mess_back = """Dziękuje za wiadomość, odpiszę jak najszybciej:)
         imie: {0}
