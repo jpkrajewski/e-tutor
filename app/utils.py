@@ -35,10 +35,10 @@ class FacebookMessengerAPI:
 
         page_access_token = settings.FACEBOOK_PAGE_ACCESS_TOKEN
         payload = {
-            'recipient': {'id': sender_psid},
-            'message': message,
-            'messaging_type': 'MESSAGE_TAG'
-        }
+                  "messaging_type": "MESSAGE_TAG",
+                  "recipient": {"id": sender_psid},
+                  "message": {"text": message}
+                }
         headers = {'content-type': 'application/json'}
         url = 'https://graph.facebook.com/v10.0/me/messages?access_token={}'.format(page_access_token)
         response = requests.post(url, json=payload, headers=headers)
