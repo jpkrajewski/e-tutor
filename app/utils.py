@@ -27,6 +27,7 @@ class FacebookMessengerAPI:
     @classmethod
     def call_send(cls, sender_psid, message):
         """
+        Sending customized message to client.
 
         :param sender_psid: str
         :param message: str
@@ -35,28 +36,80 @@ class FacebookMessengerAPI:
 
         page_access_token = settings.FACEBOOK_PAGE_ACCESS_TOKEN
         payload = {
-                  "messaging_type": "MESSAGE_TAG",
-                  "recipient": {"id": sender_psid},
-                  "message": {"text": message}
-                }
+            "messaging_type": "MESSAGE_TAG",
+            "recipient": {"id": sender_psid},
+            "message": {"text": message}
+        }
         headers = {'content-type': 'application/json'}
         url = 'https://graph.facebook.com/v14.0/me/messages?access_token={}'.format(page_access_token)
         response = requests.post(url, json=payload, headers=headers)
         return response.json()
 
     @classmethod
-    def handle_post_request(cls, request):
+    def handle_post_request(cls, request, message):
         """
-        XDDDDDDDD
+        Store message form client to your page. Save client first and last name,
+        so you can bind it to automatic messages to inform about something.
 
         :param request: POST request
-        :return: HTTP response
+        :return: HTTP response to Facebook
         """
+
         post_request = json.loads(request.body)
-        sender = post_request['entry'][0]['messaging'][0]['sender']['id']
-        new_msg = FacebookMessage(message=post_request['entry'][0]['messaging'][0]['message']['text'],
-                                  sender_psid=sender,
-                                  request_data=cls.call_send(sender, 'Dziękuje za wiadomość, odpiszę jak najszybciej:)'))
+        sender_psid = post_request['entry'][0]['messaging'][0]['sender']['id']
+        sender_message = post_request['entry'][0]['messaging'][0]['message']['text']
+
+        url = f"https://graph.facebook.com/5458874970818405?fields=name,first_name,last_name,profile_pic,locale,timezone,gender&access_token={FACEBOOK_PAGE_ACCESS_TOKEN}"
+        res = requests.get(url)
+
+        new_msg = FacebookMessage(full_name=res['name'],
+                                  message=sender_message,
+                                  sender_psid=sender_psid,
+                                  request_data=post_request)
         new_msg.save()
 
+        url = f"https://graph.facebook.com/{sender_psid}?fields=name,first_name,last_name,profile_pic,locale,timezone,gender&access_token={settings.FACEBOOK_PAGE_ACCESS_TOKEN}"
+        res = requests.get(url)
+        res = res.json()
+
+        mess_back = """Dziękuje za wiadomość, odpiszę jak najszybciej:)
+        imie: {0}
+        plec: {1}
+        locale: {2}
+        timezone: {3}
+        """.format(res['name'], res['gender'], res['locale'], res['timezone'])
+
+        cls.call_send(sender_psid, mess_back)
         return HttpResponse('OK', 200)
+
+    def _get_client_data(self, sender_psid, **kwargs):
+        """
+        Get client data by sender_id. Choose what data you want by specifying fields.
+        Available fields:
+
+        'name'
+        The user's first and last name
+
+        'first_name'
+        First name
+
+        'last_name'
+        Last name
+
+        'profile_pic'
+        URL to the Profile picture. The URL will expire.
+
+        'locale'
+        Locale of the user on Facebook. For supported locale codes, see Supported Locales.
+
+        'timezone'
+        Timezone, number relative to GMT
+
+        'gender'
+        Gender
+
+        :param sender_psid: str
+        :param kwargs:
+        :return:
+        """
+        pass
