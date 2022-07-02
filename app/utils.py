@@ -26,6 +26,13 @@ class FacebookMessengerAPI:
 
     @classmethod
     def call_send(cls, sender_psid, message):
+        """
+
+        :param sender_psid: str
+        :param message: str
+        :return: HTTP response status code: int
+        """
+
         page_access_token = settings.FACEBOOK_PAGE_ACCESS_TOKEN
         payload = {
             'recipient': {'id': sender_psid},
@@ -34,12 +41,22 @@ class FacebookMessengerAPI:
         }
         headers = {'content-type': 'application/json'}
         url = 'https://graph.facebook.com/v10.0/me/messages?access_token={}'.format(page_access_token)
-        requests.post(url, json=payload, headers=headers)
+        response = requests.post(url, json=payload, headers=headers)
+        return response.status_code
 
     @classmethod
     def handle_post_request(cls, request):
-        new_msg = FacebookMessage(message='',
-                                  sender_psid='',
+        """
+        XDDDDDDDD
+
+        :param request: POST request
+        :return: HTTP response
+        """
+        post_request = json.loads(request.body)
+        sender = post_request['entry']['messaging']['sender']['id']
+        new_msg = FacebookMessage(message=post_request['entry']['messaging']['message']['text'],
+                                  sender_psid=sender,
                                   request_data=json.loads(request.body))
         new_msg.save()
+        cls.call_send(sender, 'ELO KURWA')
         return HttpResponse('OK', 200)
