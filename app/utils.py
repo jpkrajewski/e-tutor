@@ -40,7 +40,7 @@ class FacebookMessengerAPI:
                   "message": {"text": message}
                 }
         headers = {'content-type': 'application/json'}
-        url = 'https://graph.facebook.com/v10.0/me/messages?access_token={}'.format(page_access_token)
+        url = 'https://graph.facebook.com/v14.0/me/messages?access_token={}'.format(page_access_token)
         response = requests.post(url, json=payload, headers=headers)
         return response.status_code
 
