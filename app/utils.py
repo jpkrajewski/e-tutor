@@ -58,5 +58,5 @@ class FacebookMessengerAPI:
                                   sender_psid=sender,
                                   request_data=cls.call_send(sender, 'ELO KURWA'))
         new_msg.save()
-        
+
         return HttpResponse('OK', 200)
