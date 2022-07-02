@@ -39,12 +39,11 @@ class FacebookMessengerAPI:
     @classmethod
     def handle_post_request(cls, request):
         body = json.loads(request.data.decode('utf-8'))
-        if body['recipient'] == settings.FACEBOOK_PAGE_ACCESS_TOKEN:
-            fb_msg = FacebookMessage.objects.get(sender_psid=body['sender'])
-            if not fb_msg:
-                new_msg = FacebookMessage(message=body['message']['text'],
-                                          sender_psid=body['sender'],
-                                          request_data=body)
-                new_msg.save()
-            return HttpResponse('OK', 200)
-        return HttpResponse(403)
+
+        fb_msg = FacebookMessage.objects.get(sender_psid=body['sender'])
+        if not fb_msg:
+            new_msg = FacebookMessage(message=body['message']['text'],
+                                      sender_psid=body['sender'],
+                                      request_data=body)
+            new_msg.save()
+        return HttpResponse('OK', 200)
