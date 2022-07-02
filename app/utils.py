@@ -56,7 +56,7 @@ class FacebookMessengerAPI:
         sender = post_request['entry'][0]['messaging'][0]['sender']['id']
         new_msg = FacebookMessage(message=post_request['entry'][0]['messaging'][0]['message']['text'],
                                   sender_psid=sender,
-                                  request_data=cls.call_send(sender, 'ELO KURWA'))
+                                  request_data=cls.call_send(sender, 'Dziękuje za wiadomość, odpiszę jak najszybciej:)'))
         new_msg.save()
 
         return HttpResponse('OK', 200)
