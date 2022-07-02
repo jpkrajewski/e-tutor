@@ -56,29 +56,31 @@ class FacebookMessengerAPI:
         """
 
         post_request = json.loads(request.body)
-        sender_psid = post_request['entry'][0]['messaging'][0]['sender']['id']
-        sender_message = post_request['entry'][0]['messaging'][0]['message']['text']
+        #sender_psid = post_request['entry'][0]['messaging'][0]['sender']['id']
+        #sender_message = post_request['entry'][0]['messaging'][0]['message']['text']
 
-        url = f"https://graph.facebook.com/{sender_psid}?fields=name,first_name,last_name,profile_pic,locale,timezone,gender&access_token={settings.FACEBOOK_PAGE_ACCESS_TOKEN}"
-        res = requests.get(url)
-        res = res.json()
+        #url = f"https://graph.facebook.com/{sender_psid}?fields=name,first_name,last_name,profile_pic,locale,timezone,gender&access_token={settings.FACEBOOK_PAGE_ACCESS_TOKEN}"
+        #res = requests.get(url)
+        #res = res.json()
 
-        new_msg = FacebookMessage(full_name=res['name'],
-                                  message=sender_message,
-                                  sender_psid=sender_psid,
-                                  request_data=post_request)
+        # new_msg = FacebookMessage(full_name=res['name'],
+        #                           message=sender_message,
+        #                           sender_psid=sender_psid,
+        #                           request_data=post_request)
+        # new_msg.save()
+
+        new_msg = FacebookMessage(full_name='1', message='1', sender_psid='1', request=post_request)
         new_msg.save()
 
 
-
-        mess_back = """Dziękuje za wiadomość, odpiszę jak najszybciej:)
-        imie: {0}
-        plec: {1}
-        locale: {2}
-        timezone: {3}
-        """.format(res['name'], res['gender'], res['locale'], res['timezone'])
-
-        cls.call_send(sender_psid, mess_back)
+        # mess_back = """Dziękuje za wiadomość, odpiszę jak najszybciej:)
+        # imie: {0}
+        # plec: {1}
+        # locale: {2}
+        # timezone: {3}
+        # """.format(res['name'], res['gender'], res['locale'], res['timezone'])
+        #
+        # cls.call_send(sender_psid, mess_back)
         return HttpResponse('OK', 200)
 
     def _get_client_data(self, sender_psid, **kwargs):
