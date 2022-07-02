@@ -1,12 +1,11 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
 from social_django.models import UserSocialAuth
 from .models import Task
 from .forms import TaskForm
-from .utils import FacebookMessengerAPI as FBMessenger
-import json
+from .utils import FacebookMessengerAPI
 from django.conf import settings
 
 
@@ -43,9 +42,10 @@ def login(request):
     return render(request, 'login.html')
 
 
+@csrf_exempt
 def facebook_messenger_webhook(request):
     if request.method == 'GET':
-        return FBMessenger.validate_webhook(request)
+        return FacebookMessengerAPI.validate_webhook(request)
 
     if request.method == 'POST':
-        return FBMessenger.handle_post_request(request)
+        return FacebookMessengerAPI.handle_post_request(request)
