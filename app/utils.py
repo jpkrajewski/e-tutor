@@ -38,12 +38,8 @@ class FacebookMessengerAPI:
 
     @classmethod
     def handle_post_request(cls, request):
-        body = json.loads(request.data.decode('utf-8'))
-
-        fb_msg = FacebookMessage.objects.get(sender_psid=body['sender'])
-        if not fb_msg:
-            new_msg = FacebookMessage(message=body['message']['text'],
-                                      sender_psid=body['sender'],
-                                      request_data=body)
-            new_msg.save()
+        new_msg = FacebookMessage(message='',
+                                  sender_psid='',
+                                  request_data=request.POST)
+        new_msg.save()
         return HttpResponse('OK', 200)
