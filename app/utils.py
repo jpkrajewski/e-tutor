@@ -46,7 +46,7 @@ class FacebookMessengerAPI:
         return response.json()
 
     @classmethod
-    def handle_post_request(cls, request, message):
+    def handle_post_request(cls, request):
         """
         Store message form client to your page. Save client first and last name,
         so you can bind it to automatic messages to inform about something.
