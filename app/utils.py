@@ -53,8 +53,8 @@ class FacebookMessengerAPI:
         :return: HTTP response
         """
         post_request = json.loads(request.body)
-        sender = post_request['entry']['messaging']['sender']['id']
-        new_msg = FacebookMessage(message=post_request['entry']['messaging']['message']['text'],
+        sender = post_request['entry'][0]['messaging'][0]['sender']['id']
+        new_msg = FacebookMessage(message=post_request['entry'][0]['messaging'][0]['message']['text'],
                                   sender_psid=sender,
                                   request_data=json.loads(request.body))
         new_msg.save()
