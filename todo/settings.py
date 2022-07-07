@@ -15,7 +15,7 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / 'templates'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'sslserver', # enable https on django, to log in with OAuth
     'social_django',
     'app',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -74,6 +75,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'todo.wsgi.application'
+ASGI_APPLICATION = "todo.asgi.application"
 
 
 # Database
@@ -111,11 +113,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Warsaw'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -170,3 +172,6 @@ SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [
 
 FACEBOOK_PAGE_ACCESS_TOKEN = 'EAAIE42HZBvzkBAByZBluiDXuHvpk7UkwyZBDZCKckGDXMjFMlE83D9D6LbKJ7ucChId12GsxFLBYuaC9Xs0KG7iI7xX4KXGEa14ejjbx32yUwt51DEUJkXTdSBHVtC9JNtzghU9IhSEWU7sgT2gmkS2qItRd4OVbbfAt4QEYUdyqeECEGm8b'
 FACEBOOK_PAGE_VERIFY_TOKEN = '7xX4KXGEa14ejjbx32yUwt51DEUJkXTdSBHVtC9JNtzg'
+
+E_TUTOR_NOTIFICATION_TOKEN = 'sgT2gmkS2qItRd4OVbb'
+E_TUTOR_UPDATE_LESSONS_TOKEN = 'gRrfat633-5vgsdsd-alowip'

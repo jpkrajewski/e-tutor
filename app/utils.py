@@ -1,14 +1,13 @@
 import requests
 from django.conf import settings
 from django.http import HttpResponse
-from .models import FacebookMessage
+from .models import FacebookMessage, Lesson
 import json
+from datetime import datetime, timedelta
 
 
 class FacebookMessengerAPI:
-    """
-    Class used to handle everything related to Facebook Messanger API
-    """
+    """Class used to handle everything related to Facebook Messanger API"""
 
     @classmethod
     def validate_webhook(cls, request):
@@ -101,3 +100,67 @@ class FacebookMessengerAPI:
         if response.status_code != 200:
             raise Exception(response['error']['message'])
         return response.json()
+
+
+class RequestVerifier:
+
+    def __init__(self, request, token):
+        self.request = request
+        self.token = token
+
+    def verify(self):
+        if self.request.POST.get('e-tutor-token') == self.token:
+            return True
+        return False
+
+
+class NotificationHandler:
+
+    def __init__(self, tutor_id, hours_before):
+        self.tutor_id = tutor_id
+        self.hours_before = hours_before
+        self.tutor_incoming_lessons = None
+
+    def is_time_to_send_notification(self):
+        self.tutor_incoming_lessons = Lesson.objects.incoming_lessons(self.hours_before, 1)
+        if not self.tutor_incoming_lessons:
+            return False
+        return True
+
+    # TODO: create profiles where tutors can add their own template to send to clients
+    def prepare_notification(self) -> list:
+        """
+        :return: array with dict pair id:client_id, message:message to sent  to send
+        """
+
+        message_template_tutor = 'Hey, masz o {0} zajęcia z {1}'
+        message_template_student = NotImplemented
+
+        notification_array = []
+        for lesson in self.tutor_incoming_lessons:
+            # every incoming lesson by tutors gets taken and send to clients
+            notification_array.append({'sender_psid': 5458874970818405,
+                                       'message': message_template_tutor.format(lesson.lesson_start_datetime,
+                                                                                lesson.student_id.name)
+                                       })
+
+        return notification_array
+
+
+class LessonsUpdater:
+
+    @classmethod
+    def update(cls):
+        done_lessons = Lesson.objects.get_done_lessons()
+
+        if not done_lessons:
+            return
+
+        try:
+            for lesson in done_lessons:
+                lesson.lesson_start_datetime += timedelta(days=7)
+                lesson.lesson_end_datetime += timedelta(days=7)
+                lesson.save()
+
+        except Exception as e:
+            print(e)

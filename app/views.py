@@ -1,11 +1,12 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from social_django.models import UserSocialAuth
-from .models import Task
+from .models import Task, Lesson
 from .forms import TaskForm
-from .utils import FacebookMessengerAPI
+from .utils import FacebookMessengerAPI, NotificationHandler, RequestVerifier, LessonsUpdater
 from django.conf import settings
 
 
@@ -49,3 +50,42 @@ def facebook_messenger_webhook(request):
 
     if request.method == 'POST':
         return FacebookMessengerAPI.handle_post_request(request)
+
+
+@csrf_exempt
+def messenger_reminder(request):
+    if request.method == 'POST':
+        if RequestVerifier(request, settings.E_TUTOR_NOTIFICATION_TOKEN).verify():
+            notification_handler = NotificationHandler(3, 1)
+            if notification_handler.is_time_to_send_notification():
+                notification_array = notification_handler.prepare_notification()
+                for notification in notification_array:
+                    FacebookMessengerAPI.call_send(**notification)
+            return HttpResponse(200)
+    return HttpResponse(403)
+
+
+@csrf_exempt
+def lessons_dates_update(request):
+    if request.method == 'POST':
+        if RequestVerifier(request, settings.E_TUTOR_UPDATE_LESSONS_TOKEN).verify():
+            LessonsUpdater.update()
+            return HttpResponse(200)
+        return HttpResponse(403)
+
+
+def teaching_room(request):
+    return render(request, 'teaching-room.html')
+
+
+def chat(request):
+    return render(request, 'teaching-room.html')
+
+
+def room(request, room_name):
+    return render(request, 'room.html', {
+        'room_name': room_name
+    })
+
+def test(request):
+    return HttpResponse(Lesson.objects.incoming_lessons(2, 1))
