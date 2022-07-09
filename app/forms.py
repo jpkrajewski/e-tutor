@@ -1,11 +1,5 @@
 from django.forms import ModelForm
-from .models import Task, Student
-
-
-class TaskForm(ModelForm):
-    class Meta:
-        model = Task
-        fields = ['description']
+from .models import Student
 
 
 class StudentForm(ModelForm):

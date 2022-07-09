@@ -1,5 +1,5 @@
 """
-ASGI config for todo project.
+ASGI config for etutor project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
@@ -14,7 +14,7 @@ from channels.security.websocket import AllowedHostsOriginValidator
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'todo.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'etutor.settings')
 
 from app import routing
 

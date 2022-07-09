@@ -16,9 +16,10 @@ class FacebookMessengerAPI:
         Then if we confirm that the facebook is sending request we return challenge from
         request because they want it back.
 
-        :param request: HTTP request
+        :param request: HTTP request from facebook with verification token in params
         :return: HTTP response
         """
+
         if not request.GET["hub.verify_token"] == settings.FACEBOOK_PAGE_VERIFY_TOKEN:
             return HttpResponse(403)
         return HttpResponse(request.GET['hub.challenge'], 200)
@@ -39,9 +40,11 @@ class FacebookMessengerAPI:
             "recipient": {"id": sender_psid},
             "message": {"text": message}
         }
+
         headers = {'content-type': 'application/json'}
         url = 'https://graph.facebook.com/v14.0/me/messages?access_token={}'.format(page_access_token)
         response = requests.post(url, json=payload, headers=headers)
+
         return response.json()
 
     @classmethod
@@ -102,18 +105,6 @@ class FacebookMessengerAPI:
         return response.json()
 
 
-class RequestVerifier:
-
-    def __init__(self, request, token):
-        self.request = request
-        self.token = token
-
-    def verify(self):
-        if self.request.POST.get('e-tutor-token') == self.token:
-            return True
-        return False
-
-
 class NotificationHandler:
 
     def __init__(self, tutor_id, hours_before):
@@ -154,13 +145,14 @@ class LessonsUpdater:
         done_lessons = Lesson.objects.get_done_lessons()
 
         if not done_lessons:
-            return
+            return 'No lessons were updated'
 
         try:
             for lesson in done_lessons:
                 lesson.lesson_start_datetime += timedelta(days=7)
                 lesson.lesson_end_datetime += timedelta(days=7)
                 lesson.save()
+            return 'Update successful'
 
         except Exception as e:
-            print(e)
+            return e

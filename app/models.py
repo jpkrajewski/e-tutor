@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 
 class Student(models.Model):
@@ -21,13 +22,13 @@ class LessonNote(models.Model):
 
 class LessonManager(models.Manager):
     def incoming_lessons(self, hours, tutor_id):
-        now = datetime.now()
+        now = datetime.now(tz=timezone.utc)
         return self.filter(lesson_start_datetime__gte=now,
                            lesson_start_datetime__lte=now + timedelta(hours=hours),
                            tutor_id=tutor_id)
 
     def get_done_lessons(self):
-        return self.filter(lesson_end_datetime__lt=datetime.now())
+        return self.filter(lesson_end_datetime__lt=datetime.now(tz=timezone.utc))
 
 
 class Lesson(models.Model):
@@ -56,19 +57,4 @@ class FacebookMessage(models.Model):
     message = models.CharField(max_length=200)
     sender_psid = models.CharField(max_length=50)
     request_data = models.CharField(max_length=400)
-
-
-class Task(models.Model):
-    description = models.CharField(max_length=500)
-    is_starred = models.BooleanField(default=False)
-    start_date = models.DateTimeField(default=datetime.now())
-    category = models.PositiveSmallIntegerField(default=0)
-    is_done = models.BooleanField(default=False)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    class Meta:
-        ordering = ['is_starred', 'is_done', '-start_date']
-
-    def __str__(self):
-        return self.description
 
