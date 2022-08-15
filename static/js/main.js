@@ -144,7 +144,7 @@ function findxy(res, e) {
 const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
 const lessonSocket = new WebSocket(
-    'ws://'
+    'wss://'
     + window.location.host
     + '/ws/lesson/'
     + roomName
