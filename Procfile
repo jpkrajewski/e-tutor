@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: daphne etutor.asgi:application
+web: daphne -b 0.0.0.0 -p $PORT etutor.asgi:application
