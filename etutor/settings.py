@@ -203,4 +203,4 @@ CELERY_TIMEZONE = 'Europe/Warsaw'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
-django_heroku.setting(locals())
+django_heroku.settings(locals())
