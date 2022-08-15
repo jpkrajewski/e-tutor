@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: gunicorn todo.wsgi
+web: gunicorn app.wsgi
