@@ -143,7 +143,7 @@ function findxy(res, e) {
 
 const roomName = JSON.parse(document.getElementById('room-name').textContent);
 const ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-const lessonSocket = new ReconnectingWebSocket(
+const lessonSocket = new WebSocket(
     ws_scheme
     + '://'
     + window.location.host
