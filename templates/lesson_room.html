@@ -6,29 +6,23 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
       <title>Lesson room</title>
 </head>
+<body>
 
-<body onload="init()">
-
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <a class="navbar-brand" href="#">Etutor</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" onclick="erase()">Erase</a>
-      </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Features</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Pricing</a>
+        <a class="nav-link" href="#" onclick="erase()">Erase</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -51,21 +45,38 @@
 
 
 <main>
-<div class="container">
-<div class="row">
-    <div class="col-12"><canvas id="can" width="1000" height="800" style="border:2px solid;position:fixed"></canvas></div>
+<div class="container-fluid bg-light">
+<div class="row fullscreen">
+    <div class="col-9"><canvas id="can" width="1500" height="800"></canvas></div>
+    <div id="chat" class="col-3 p-3 bg-secondary">
+            <h3>Chat</h3>
+            <div id="messages">
+                <ul id="message-list" class="list-group list-group-flush"></ul>
+            </div>
+
+            <div><input id="msg"><button id="btn-send-msg">Send</button></div>
+<!--            <button id="btn-share-screen">Share screen</button>-->
+        </div>
   </div>
 </div>
+<!--        <div id="video-container" class="col-6">-->
+<!--            <div><video id="local-video" style="float: left" autoplay playsinline></video></div>-->
+<!--            <button id="btn-toggle-audio">Audio mute</button>-->
+<!--            <button id="btn-toggle-video">Video off</button>-->
+<!--        </div>-->
+
 </main>
+<footer>
+    <div class="container-fluid bg-dark">
+        <div class="row">
+            <div class="col-12 text-center p-5 text-white">
+                <p>Made by Krajewski</p>
+            </div>
+        </div>
+    </div>
+</footer>
 
         {{ room_name|json_script:"room-name" }}
-
-        {% if user.is_authenticated %}
-            {{ user.get_username|json_script:'username' }}
-
-        {% else %}
-            {{ username|json_script:'username' }}
-        {% endif %}
 
         <script src="{% static 'js/main.js' %}"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

@@ -1,0 +1,18 @@
+#messages {
+    height: 300px;
+    overflow-y: scroll;
+    overflow-wrap: break-word;
+    background-color: white;
+}
+
+.fullscreen {
+    height: 100vh;
+}
+
+#can {
+    overflow: clip;
+}
+
+#msg {
+    width: 100%;
+}

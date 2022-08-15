@@ -27,23 +27,9 @@ def facebook_messenger_webhook(request):
         return FacebookMessengerAPI.handle_post_request(request)
 
 
-def teaching_room(request):
-    return render(request, 'teaching-room.html')
-
-
-def chat(request):
-    return render(request, 'teaching-room.html')
-
-
-def room(request, room_name):
-    return render(request, 'room.html', {
-        'room_name': room_name
-    })
-
-
 def lesson_room(request, room_name):
     return render(request, 'lesson_room.html', {
         'room_name': room_name,
-        'username': 'Student'
+        'username': 'student'
     })
 
