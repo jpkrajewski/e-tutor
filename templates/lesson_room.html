@@ -22,11 +22,11 @@
   <div class="collapse navbar-collapse" id="navbarNavDropdown">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" href="#" onclick="erase()">Erase</a>
+        <a class="nav-link" href="#" onclick="erase()">Clear board</a>
       </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Colors
+          Pen colors
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                 <a class="dropdown-item" href="#" id="green" onclick="color(this)">Green</a>
@@ -38,6 +38,9 @@
                 <a class="dropdown-item" href="#" id="black" onclick="color(this)">Black</a>
                 <a class="dropdown-item" href="#" id="white" onclick="color(this)">Eraser</a>
         </div>
+      </li>
+        <li class="nav-item">
+        <a class="nav-link" href="#" onclick="saveCanvas()">Save notes as image</a>
       </li>
     </ul>
   </div>

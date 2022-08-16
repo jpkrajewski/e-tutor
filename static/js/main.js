@@ -281,5 +281,39 @@ function addLocalTracks(peer) {
     return;
 }
 
+function saveCanvas() {
+    console.log('start')
+    const link = document.createElement('a');
+    let name = new Date().toLocaleTimeString();
+    link.download = name + '.png';
+
+    // We're going to modify the context state, so it's
+    // good practice to save the current state first.
+    ctx.save();
+
+    // Normally when you draw on a canvas, the new drawing
+    // covers up any previous drawing it overlaps. This is
+    // because the default `globalCompositeOperation` is
+    // 'source-over'. By changing this to 'destination-over',
+    // our new drawing goes behind the existing drawing. This
+    // is desirable so we can fill the background, while leaving
+    // the chart and any other existing drawing intact.
+    // Learn more about `globalCompositeOperation` here:
+    // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+    ctx.globalCompositeOperation = 'destination-over';
+
+    // Fill in the background. We do this by drawing a rectangle
+    // filling the entire canvas, using the provided color.
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    link.href = canvas.toDataURL();
+    link.click();
+    link.delete;
+
+    // Restore the original context state from `context.save()`
+    ctx.restore();
+}
+
 
 init();
