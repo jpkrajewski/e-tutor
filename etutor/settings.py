@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
-import django_heroku
+# import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -188,7 +188,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [os.environ.get('REDISCLOUD_URL', '127.0.0.1:6379')],
+            "hosts": [os.getenv('REDISCLOUD_URL', ('127.0.0.1', 6379))],
         },
     },
 }
@@ -203,4 +203,4 @@ CELERY_TIMEZONE = 'Europe/Warsaw'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
-django_heroku.settings(locals())
+# django_heroku.settings(locals())

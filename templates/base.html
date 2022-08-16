@@ -11,7 +11,7 @@
 
       <title>{% block title %}{% endblock %}</title>
 </head>
-<body>
+<body class="bg-light">
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <a class="navbar-brand" href="#">Etutor</a>
@@ -28,6 +28,9 @@
         <a class="nav-link" href="/logout" >Logout</a>
       </li>
       {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="/lesson/demo" >Lesson room demo</a>
+      </li>
     </ul>
   </div>
 </nav>

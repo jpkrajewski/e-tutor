@@ -9,13 +9,8 @@ from .utils import FacebookMessengerAPI, NotificationHandler, LessonsUpdater
 from django.conf import settings
 
 
-@login_required
 def home(request):
     return render(request, 'home.html')
-
-
-def login(request):
-    return render(request, 'login.html')
 
 
 @csrf_exempt
@@ -28,6 +23,10 @@ def facebook_messenger_webhook(request):
 
 
 def lesson_room(request, room_name):
+
+    if room_name != 'demo':
+        return redirect('home')
+
     return render(request, 'lesson_room.html', {
         'room_name': room_name,
         'username': 'student'

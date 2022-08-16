@@ -9,8 +9,9 @@
     height: 100vh;
 }
 
-#can {
-    overflow: clip;
+.overflow-hidden {
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 #msg {
