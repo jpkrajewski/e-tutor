@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 import django_heroku
 
@@ -188,7 +188,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('redis://redis-19574.c57.us-east-1-4.ec2.cloud.redislabs.com', 19574)],
+            "hosts": [os.environ.get('REDISCLOUD_URL', '127.0.0.1:6379')],
         },
     },
 }
