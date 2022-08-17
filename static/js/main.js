@@ -182,6 +182,10 @@ lessonSocket.onmessage = event => {
             chatAction(data);
             break;
 
+        case 'connected':
+            chatAction(data);
+            break;
+
         default:
             console.log('default');
 
@@ -191,15 +195,21 @@ lessonSocket.onmessage = event => {
     console.log(username);
 };
 
-
+function showChatMessage(chatMessage) {
+    let li = document.createElement('li');
+    li.appendChild(document.createTextNode(chatMessage));
+    li.classList.add("list-group-item");
+    messageList.appendChild(li);
+}
 
 function chatAction(data){
     switch(data.action) {
         case 'send':
-            let li = document.createElement('li');
-            li.appendChild(document.createTextNode(data.message.user + ': ' + data.message.message));
-            li.classList.add("list-group-item");
-            messageList.appendChild(li);
+            showChatMessage(data.message.user + ': ' + data.message.message);
+            break;
+
+        case 'new-peer':
+            showChatMessage(data.username + ' joined the room!');
             break;
 
         default:

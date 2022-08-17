@@ -35,6 +35,7 @@ class Lesson(models.Model):
     lesson_start_datetime = models.DateTimeField()
     lesson_end_datetime = models.DateTimeField()
     description = models.CharField(max_length=600, blank=True)
+    repetitive = models.BooleanField()
     tutor = models.ForeignKey(User, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
 

@@ -11,7 +11,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
-import django_heroku
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
+
+if not DEBUG:
+    import django_heroku
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +28,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-c=)htg7s(=mslc7^z*hv9pwizf(cwkg89^76hqrvee4gz&lar!'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['krajewski.herokuapp.com', 'localhost', '127.0.0.1']
 
@@ -184,11 +186,14 @@ FACEBOOK_PAGE_VERIFY_TOKEN = '7xX4KXGEa14ejjbx32yUwt51DEUJkXTdSBHVtC9JNtzg'
 
 
 # Websocket-Redis connection
+
+channel_layer_host = 'redis://127.0.0.1:6379' if DEBUG else os.getenv('REDISCLOUD_URL')
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [os.getenv('REDISCLOUD_URL')],
+            "hosts": [channel_layer_host],
         },
     },
 }
@@ -203,4 +208,5 @@ CELERY_TIMEZONE = 'Europe/Warsaw'
 CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
-django_heroku.settings(locals())
+if not DEBUG:
+    django_heroku.settings(locals())

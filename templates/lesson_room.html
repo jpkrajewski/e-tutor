@@ -48,18 +48,57 @@
 
 
 <main>
-<div class="container-fluid bg-light">
+<div class="container-fluid">
 <div class="row fullscreen overflow-hidden">
     <div class="col-9 "><canvas id="can" width="1500" height="800"></canvas></div>
-    <div id="chat" class="col-3 p-3 bg-secondary">
-            <h3>Chat</h3>
+    <div class="col-3 p-3 bg-secondary">
+        <div id="chat">
             <div id="messages">
                 <ul id="message-list" class="list-group list-group-flush"></ul>
             </div>
 
-            <div><input id="msg"><button id="btn-send-msg">Send</button></div>
+            <div class="input-group mb-3">
+                <input id="msg" type="text" class="form-control" placeholder="Type your chat message..." aria-label="Recipient's username" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-warning btn-chat" type="button" id="btn-send-msg">Send</button>
+              </div>
+            </div>
 <!--            <button id="btn-share-screen">Share screen</button>-->
         </div>
+
+        <div class="calc-container mt-5 mb-5">
+        <div class="calc-body">
+            <div class="result-display">
+                <h1 id="result-display">0</h1>
+            </div>
+            <div class="calc-display">
+                <h3 id="calc-display"></h3>
+            </div>
+            <div class="btn-wrap">
+                <button onclick="allClear()" class="calc-btn calc-btn-orange">AC</button>
+                <button onclick="del()" class="calc-btn calc-btn-orange">C</button>
+                <button onclick="display('%')" class="calc-btn calc-btn-orange">%</button>
+                <button onclick="display('/')" class="calc-btn calc-btn-orange">&#247</button>
+                <button onclick="display('7')" class="calc-btn">7</button>
+                <button onclick="display('8')" class="calc-btn">8</button>
+                <button onclick="display('9')" class="calc-btn">9</button>
+                <button onclick="display('*')" class="calc-btn calc-btn-orange">X</button>
+                <button onclick="display('4')" class="calc-btn">4</button>
+                <button onclick="display('5')" class="calc-btn">5</button>
+                <button onclick="display('6')" class="calc-btn">6</button>
+                <button onclick="display('-')" class="calc-btn calc-btn-orange">-</button>
+                <button onclick="display('1')" class="calc-btn">1</button>
+                <button onclick="display('2')" class="calc-btn">2</button>
+                <button onclick="display('3')" class="calc-btn">3</button>
+                <button onclick="display('+')" class="calc-btn calc-btn-orange">+</button>
+                <button onclick="display('0')" class="calc-btn">0</button>
+                <button onclick="display('.')" class="calc-btn calc-btn-orange">.</button>
+                <button onclick="calculate()" class="calc-btn calc-btn-lg">=</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
   </div>
 </div>
 <!--        <div id="video-container" class="col-6">-->
@@ -82,6 +121,7 @@
         {{ room_name|json_script:"room-name" }}
 
         <script src="{% static 'js/main.js' %}"></script>
+        <script src="{% static 'js/calculator.js' %}"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
