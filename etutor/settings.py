@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 if not DEBUG:
     import django_heroku
@@ -186,7 +186,6 @@ FACEBOOK_PAGE_VERIFY_TOKEN = '7xX4KXGEa14ejjbx32yUwt51DEUJkXTdSBHVtC9JNtzg'
 
 
 # Websocket-Redis connection
-
 channel_layer_host = 'redis://127.0.0.1:6379' if DEBUG else os.getenv('REDISCLOUD_URL')
 
 CHANNEL_LAYERS = {
