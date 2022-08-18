@@ -5,6 +5,16 @@
     background-color: white;
 }
 
+.fullscreen {
+    height: 1000px;
+}
+
+.canvas-settings {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: inherit;
+}
+
 .overflow-hidden {
     overflow-x: hidden;
     overflow-y: hidden;

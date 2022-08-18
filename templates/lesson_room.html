@@ -38,7 +38,16 @@
                 <a class="dropdown-item" href="#" id="black" onclick="color(this)">Black</a>
                 <a class="dropdown-item" href="#" id="white" onclick="color(this)">Eraser</a>
         </div>
-      </li>
+          </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Helpfull links
+            </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" target="_blank" href="https://www.oke.waw.pl/files/oke_waw_3498wybrane_wzory_matematyczne_EM2023.pdf.pdf">Karta maturalna</a>
+
+        </div>
+        </li>
         <li class="nav-item">
         <a class="nav-link" href="#" onclick="saveCanvas()">Save notes as image</a>
       </li>
@@ -50,11 +59,17 @@
 <main>
 <div class="container-fluid">
 <div class="row fullscreen overflow-hidden">
-    <div class="col-9 "><canvas id="can" width="1500" height="800"></canvas></div>
+    <div class="col-9 canvas-settings">
+        <canvas id="can" width="1800" height="3000"></canvas>
+    </div>
     <div class="col-3 p-3 bg-secondary">
         <div id="chat">
             <div id="messages">
-                <ul id="message-list" class="list-group list-group-flush"></ul>
+                <ul id="message-list" class="list-group list-group-flush">
+                    <li class="list-group-item">Etutor: Welcome to the DEMO lesson room! </li>
+                    <li class="list-group-item">Etutor: To start drawing just use your mouse on a white board like in paint :)</li>
+                    <li class="list-group-item">Etutor: Also lookup my fanpage:  <a target="_blank" href="https://www.facebook.com/alfamatma">Alfamatma.pl</a> </li>
+                </ul>
             </div>
 
             <div class="input-group mb-3">
@@ -111,7 +126,7 @@
 <footer>
     <div class="container-fluid bg-dark">
         <div class="row">
-            <div class="col-12 text-center p-5 text-white">
+            <div class="col-12 text-center p-3 text-white">
                 <p>Made by Krajewski</p>
             </div>
         </div>

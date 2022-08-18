@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 if not DEBUG:
     import django_heroku

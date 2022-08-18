@@ -8,7 +8,7 @@ let canvas, ctx, flag = false,
 let x = "black",
     y = 2;
 
-const username = 'user' + Math.ceil(Math.random()*10000)
+const username = 'student' + Math.ceil(Math.random()*10000)
 
 const messageList = document.getElementById('message-list');
 const sendMessageButton = document.getElementById('btn-send-msg');
@@ -22,12 +22,13 @@ sendMessageButton.addEventListener('click', () => {
         return;
     }
 
-    let li = document.createElement('li');
-    li.appendChild(document.createTextNode('Me: ' + message));
-    li.classList.add("list-group-item");
-    messageInputBox.value = '';
-    messageList.appendChild(li);
+    if(isValidURL(message)) {
+        showChatMessageLink('Me', message);
+    } else {
+        showChatMessage('Me: ' + message);
+    }
 
+    messageInputBox.value = '';
     sendSignal('send', {'message': message, 'user': username}, 'chat');
 
 });
@@ -202,10 +203,30 @@ function showChatMessage(chatMessage) {
     messageList.appendChild(li);
 }
 
+function showChatMessageLink(user, link) {
+
+    let a = document.createElement('a');
+    let linkText = document.createTextNode(link);
+    a.appendChild(linkText);
+    a.href = link;
+    a.target = "_blank"
+
+    let li = document.createElement('li');
+    li.appendChild(document.createTextNode(user + ': '));
+    li.appendChild(a);
+    li.classList.add("list-group-item");
+    messageList.appendChild(li);
+}
+
 function chatAction(data){
     switch(data.action) {
         case 'send':
-            showChatMessage(data.message.user + ': ' + data.message.message);
+            if(isValidURL(data.message.message)) {
+                console.log('works');
+                showChatMessageLink(data.message.user, data.message.message);
+            } else {
+                showChatMessage(data.message.user + ': ' + data.message.message);
+            }
             break;
 
         case 'new-peer':
@@ -291,38 +312,24 @@ function addLocalTracks(peer) {
     return;
 }
 
+function isValidURL(str) {
+  var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+    '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+  return !!pattern.test(str);
+}
+
 function saveCanvas() {
     console.log('start')
     const link = document.createElement('a');
     let name = new Date().toLocaleTimeString();
-    link.download = name + '.png';
-
-    // We're going to modify the context state, so it's
-    // good practice to save the current state first.
-    ctx.save();
-
-    // Normally when you draw on a canvas, the new drawing
-    // covers up any previous drawing it overlaps. This is
-    // because the default `globalCompositeOperation` is
-    // 'source-over'. By changing this to 'destination-over',
-    // our new drawing goes behind the existing drawing. This
-    // is desirable so we can fill the background, while leaving
-    // the chart and any other existing drawing intact.
-    // Learn more about `globalCompositeOperation` here:
-    // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
-    ctx.globalCompositeOperation = 'destination-over';
-
-    // Fill in the background. We do this by drawing a rectangle
-    // filling the entire canvas, using the provided color.
-    ctx.fillStyle = 'white';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+    link.download = 'mathematics' + name + '.png';
     link.href = canvas.toDataURL();
     link.click();
     link.delete;
-
-    // Restore the original context state from `context.save()`
-    ctx.restore();
 }
 
 

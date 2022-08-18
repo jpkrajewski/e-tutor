@@ -7,10 +7,28 @@ from social_django.models import UserSocialAuth
 from .models import Lesson
 from .utils import FacebookMessengerAPI, NotificationHandler, LessonsUpdater
 from django.conf import settings
+import requests
 
 
 def home(request):
     return render(request, 'home.html')
+
+
+
+def profile(request):
+    payload = {
+        "messaging_type": "MESSAGE_TAG",
+        "recipient": {"id": 5458874970818405},
+        "message": {"text": 'test'}
+    }
+
+    headers = {'content-type': 'application/json'}
+    url = 'https://graph.facebook.com/v14.0/me/messages?access_token={}'.format('EAAIE42HZBvzkBAByZBluiDXuHvpk7UkwyZBDZCKckGDXMjFMlE83D9D6LbKJ7ucChId12GsxFLBYuaC9Xs0KG7iI7xX4KXGEa14ejjbx32yUwt51DEUJkXTdSBHVtC9JNtzghU9IhSEWU7sgT2gmkS2qItRd4OVbbfAt4QEYUdyqeECEGm8b')
+    response = requests.post(url, json=payload, headers=headers)
+
+
+
+    return render(request, 'profile.html')
 
 
 @csrf_exempt
