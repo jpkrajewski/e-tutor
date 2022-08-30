@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-c=)htg7s(=mslc7^z*hv9pwizf(cwkg89^76hqrvee4gz&lar!
 
 ALLOWED_HOSTS = ['krajewski.herokuapp.com', 'localhost', '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = ['http://*', 'https://*']
+CSRF_TRUSTED_ORIGINS = ['http://*', 'https://krajewski.herokuapp.com']
 # Application definition
 
 INSTALLED_APPS = [
