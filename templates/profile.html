@@ -1,10 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+    <div class="col-10">
+        <h1>Reminders</h1>
 
-</body>
-</html>
+
+        <form>
+            <div class="form-outline">
+                <label class="form-label" for="typeNumber">Hours before to send reminder:</label>
+                <input type="number" value="{{ profile.send_reminder_hours_before }}" id="typeNumber" class="form-control" />
+            </div>
+            <div class="form-outline">
+                <label class="form-label" for="textArea1">Message content to you:</label>
+                <textarea class="form-control" id="textArea1" rows="4"></textarea>
+            </div>
+            <div class="form-outline">
+                <label class="form-label" for="textArea2">Message content to students:</label>
+                <textarea class="form-control" id="textArea2" rows="4"></textarea>
+            </div>
+              <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+    <div class="col-2">
+      One of three columns
+    </div>
+  </div>
+</div>
+
+{{ profile.active }}
+
+{% endblock %}

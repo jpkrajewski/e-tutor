@@ -25,7 +25,7 @@ class FacebookMessengerAPI:
         return HttpResponse(request.GET['hub.challenge'], 200)
 
     @classmethod
-    def call_send(cls, sender_psid, message):
+    def call_send(cls, payload):
         """
         Sending customized message to client.
 
@@ -35,11 +35,6 @@ class FacebookMessengerAPI:
         """
 
         page_access_token = settings.FACEBOOK_PAGE_ACCESS_TOKEN
-        payload = {
-            "messaging_type": "MESSAGE_TAG",
-            "recipient": {"id": sender_psid},
-            "message": {"text": message}
-        }
 
         headers = {'content-type': 'application/json'}
         url = 'https://graph.facebook.com/v14.0/me/messages?access_token={}'.format(page_access_token)
@@ -105,6 +100,28 @@ class FacebookMessengerAPI:
         return response.json()
 
 
+class FacebookReminder:
+    def __init__(self, psid, template, lesson):
+        self.template = template
+        self.lesson = lesson
+        self.message = {
+            "messaging_type": "MESSAGE_TAG",
+            "recipient": {"id": psid},
+            "message": {"text": None}
+        }
+
+    def _create_reminder(self):
+        self.message['message']['text'] = self.template.format(lesson_start=self.lesson.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M:%S"),
+                                                               lesson_end=self.lesson.end_datetime.astimezone().strftime("%m/%d/%Y, %H:%M:%S"),
+                                                               student_fname=self.lesson.student.first_name,
+                                                               student_lname=self.lesson.student.last_name,
+                                                               lesson_description=self.lesson.description)
+        return self.message
+
+    def get_reminder(self):
+        return self._create_reminder()
+
+
 class NotificationHandler:
 
     def __init__(self, tutor_id, hours_before):
@@ -137,22 +154,3 @@ class NotificationHandler:
 
         return notification_array
 
-
-class LessonsUpdater:
-
-    @classmethod
-    def update(cls):
-        done_lessons = Lesson.objects.get_done_lessons()
-
-        if not done_lessons:
-            return 'No lessons were updated'
-
-        try:
-            for lesson in done_lessons:
-                lesson.lesson_start_datetime += timedelta(days=7)
-                lesson.lesson_end_datetime += timedelta(days=7)
-                lesson.save()
-            return 'Update successful'
-
-        except Exception as e:
-            return e

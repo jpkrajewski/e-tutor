@@ -1,5 +1,4 @@
 import os
-
 from celery import Celery
 from celery.schedules import crontab
 
@@ -15,18 +14,21 @@ app = Celery('etutor')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
-    'check-incoming-lessons-every-10-minutes': {
-        'task': 'app.tasks.check_incoming_lessons',
+    'send-lesson-reminder-every-30-seconds': {
+        'task': 'app.tasks.send_lesson_reminder',
         'schedule': crontab(),
     },
 
-    'update-lessons-date-at-1am': {
-        'task': 'app.tasks.update_lessons_dates',
+    'organize-done_lessons-date-at-1am': {
+        'task': 'app.tasks.organize_done_lessons',
         'schedule': crontab(),
         # 'args': ()
     },
 
-
+    'create-lesson-room-every-30-seconds': {
+        'task': 'app.tasks.create_lesson_room',
+        'schedule': crontab(),
+    },
 }
 
 # Load task modules from all registered Django apps.
