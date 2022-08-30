@@ -183,19 +183,19 @@ FACEBOOK_PAGE_VERIFY_TOKEN = '7xX4KXGEa14ejjbx32yUwt51DEUJkXTdSBHVtC9JNtzg'
 
 
 # Websocket-Redis connection
-channel_layer_host = 'redis://127.0.0.1:6379' if DEBUG else os.getenv('REDISCLOUD_URL')
+REDIS_HOST = 'redis://127.0.0.1:6379' if DEBUG else os.getenv('REDISCLOUD_URL')
 
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [channel_layer_host],
+            "hosts": [REDIS_HOST],
         },
     },
 }
 
 # Celery config
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_BROKER_URL = REDIS_HOST
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
