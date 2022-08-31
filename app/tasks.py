@@ -1,5 +1,5 @@
 from celery import shared_task
-from .utils import FacebookMessengerAPI, FacebookReminder
+from .utils import FacebookMessengerAPI, FacebookReminder, FacebookReminderTeachingRoom
 from .models import Tutor, Lesson, TeachingRoom
 from django.utils import timezone
 from datetime import timedelta, datetime
@@ -16,13 +16,19 @@ def send_lesson_reminder(self):
 
     facebook_reminders = []
     for tutor in tutors:
-        lessons = tutor.lesson_set.get_lessons_for_reminders(hours_before=tutor.send_reminder_hours_before,
-                                                             datetime_now=datetime.now(tz=timezone.utc))
+        lessons = tutor.lesson_set.get_lessons_for_reminders(
+            hours_before=tutor.send_reminder_hours_before,
+            datetime_now=datetime.now(tz=timezone.utc)
+        )
         for lesson in lessons:
-            facebook_reminders.append(FacebookReminder(psid=tutor.psid,
-                                                       template=tutor.message_template_to_yourself,
-                                                       lesson=lesson).get_reminder())
-            lesson.facebook_notification_send = True
+            facebook_reminder = FacebookReminder(
+                psid=tutor.int_facebook_psid,
+                template=tutor.message_template_to_yourself,
+                lesson=lesson
+            )
+
+            facebook_reminders.append(facebook_reminder.get_reminder())
+            lesson.is_facebook_notification_send = True
             lesson.save()
 
     if not facebook_reminders:
@@ -41,13 +47,25 @@ def create_lesson_room(self):
     if not lessons:
         return 'No teaching rooms were created'
 
-    response = []
+    facebook_reminders = []
     for lesson in lessons:
         teaching_room = TeachingRoom(url=token_urlsafe(50), lesson=lesson)
         teaching_room.save()
-        response.append(str(teaching_room))
+        facebook_teaching_room_reminder = FacebookReminderTeachingRoom(
+            psid=lesson.tutor.int_facebook_psid,
+            template=lesson.tutor.message_template_to_yourself,
+            lesson=lesson,
+            teaching_room=teaching_room
+        )
 
-    return 'Rooms created: ' + str(response)
+        facebook_reminders.append(facebook_teaching_room_reminder.get_reminder())
+
+    response = []
+    for reminder in facebook_reminders:
+        response.append(FacebookMessengerAPI.call_send(reminder))
+        response.append(reminder)
+
+    return 'Rooms created: ' + response
 
 
 @shared_task(bind=True)
@@ -63,16 +81,15 @@ def organize_done_lessons(self):
         try:
             # delete teaching room
             lesson.teachingroom.delete()
-            lesson_flow_info = f'{str(lesson)} teaching room deleted'
+            lesson_flow_info.append(f'{str(lesson)} teaching room deleted')
         except lesson.teachingroom.RelatedObjectDoesNotExist as e:
-            lesson_flow_info = f'{str(lesson)} teaching room not deleted: {e}'
+            lesson_flow_info.append(f'{str(lesson)} teaching room not deleted: {e}')
 
-        if lesson.repetitive:
             # update lesson to be next week
-            lesson.start_datetime += timedelta(days=7)
-            lesson.end_datetime += timedelta(days=7)
-            lesson.save()
-            lesson_flow_info += 'Updated successfully'
+        lesson.start_datetime += timedelta(days=7)
+        lesson.end_datetime += timedelta(days=7)
+        lesson.save()
+        lesson_flow_info.append('Updated successfully')
 
-        response.append(' '.join(lesson_flow_info))
+    response.append(' '.join(lesson_flow_info))
     return str(response)

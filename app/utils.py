@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from .models import FacebookMessage, Lesson
 import json
 from datetime import datetime, timedelta
+from django.conf import settings
 
 
 class FacebookMessengerAPI:
@@ -57,10 +58,12 @@ class FacebookMessengerAPI:
         sender_message = post_request['entry'][0]['messaging'][0]['message']['text']
 
         client_data = cls._get_client_data(sender_psid, 'name', 'gender', 'locale', 'timezone')
-        new_msg = FacebookMessage(full_name=client_data,
-                                  message=sender_message,
-                                  sender_psid=sender_psid,
-                                  request_data=post_request)
+        new_msg = FacebookMessage(
+            full_name=client_data,
+            message=sender_message,
+            sender_psid=sender_psid,
+            request_data=post_request
+        )
         new_msg.save()
 
         message_back = """
@@ -101,25 +104,45 @@ class FacebookMessengerAPI:
 
 
 class FacebookReminder:
+    """Class to create facebook message in corecct format for facebook api"""
+
     def __init__(self, psid, template, lesson):
-        self.template = template
-        self.lesson = lesson
-        self.message = {
+        self._template = template
+        self._lesson = lesson
+        self._message = {
             "messaging_type": "MESSAGE_TAG",
             "recipient": {"id": psid},
             "message": {"text": None}
         }
 
     def _create_reminder(self):
-        self.message['message']['text'] = self.template.format(lesson_start=self.lesson.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M:%S"),
-                                                               lesson_end=self.lesson.end_datetime.astimezone().strftime("%m/%d/%Y, %H:%M:%S"),
-                                                               student_fname=self.lesson.student.first_name,
-                                                               student_lname=self.lesson.student.last_name,
-                                                               lesson_description=self.lesson.description)
-        return self.message
+        self._message['message']['text'] = self._template.format(
+            lesson_start=self._lesson.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M"),
+            lesson_end=self._lesson.end_datetime.astimezone().strftime("%m/%d/%Y, %H:%M"),
+            student_fname=self._lesson.student.first_name,
+            student_lname=self._lesson.student.last_name,
+            lesson_description=self._lesson.description,
+            place=self._lesson.place,
+            subject=self._lesson.subject,
+            description=self._lesson.description,
+            address=self._lesson.student.address,
+        )
 
     def get_reminder(self):
-        return self._create_reminder()
+        self._create_reminder()
+        return self._message
+
+
+class FacebookReminderTeachingRoom(FacebookReminder):
+    def __init__(self, psid, template, lesson, teaching_room):
+        super().__init__(psid, template, lesson)
+        self._teaching_room = teaching_room
+
+    def get_reminder(self):
+        super()._create_reminder()
+        link_to_room = f'\n\nLink to room: {settings.LESSON_URL}{self._teaching_room.get_absolute_url()}'
+        self._message['message']['text'] += link_to_room
+        return self._message
 
 
 class NotificationHandler:
@@ -153,4 +176,3 @@ class NotificationHandler:
                                        })
 
         return notification_array
-

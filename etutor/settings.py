@@ -15,6 +15,8 @@ from pathlib import Path
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / 'templates'
@@ -29,6 +31,7 @@ SECRET_KEY = 'django-insecure-c=)htg7s(=mslc7^z*hv9pwizf(cwkg89^76hqrvee4gz&lar!
 ALLOWED_HOSTS = ['krajewski.herokuapp.com', 'localhost', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'https://krajewski.herokuapp.com']
+LESSON_URL = CSRF_TRUSTED_ORIGINS[0] + ':8000'
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,7 +44,6 @@ INSTALLED_APPS = [
 
     'django_celery_results',
     'django_celery_beat',
-    'sslserver', # enable https on django, to log in with OAuth
     'social_django',
     'app',
     'channels',
@@ -205,5 +207,6 @@ CELERY_RESULT_BACKEND = 'django-db'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
 if not DEBUG:
+    LESSON_URL = CSRF_TRUSTED_ORIGINS[1]
     import django_heroku
     django_heroku.settings(locals())

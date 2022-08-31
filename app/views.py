@@ -69,13 +69,13 @@ class LessonCreateView(CreateView):
 
 
 class LessonDetailView(DetailView):
-    model = Student
-    template_name = 'student_detail.html'
+    model = Lesson
+    template_name = 'lesson_detail.html'
 
 
 class LessonListView(ListView):
-    model = Student
-    template_name = 'student_list.html'
+    model = Lesson
+    template_name = 'lesson_list.html'
     # paginate_by = 100  # if pagination is desired
 
 
