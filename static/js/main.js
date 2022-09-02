@@ -33,6 +33,14 @@ sendMessageButton.addEventListener('click', () => {
 
 });
 
+messageInputBox.onkeypress = (event) => {
+  const keyCode = event.keyCode
+  if (keyCode === 13) {
+    sendMessageButton.click()
+  }
+}
+
+
 function init() {
     canvas = document.getElementById('can');
     ctx = canvas.getContext("2d");

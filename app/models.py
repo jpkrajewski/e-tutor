@@ -6,6 +6,8 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 
+# TODO CLASS EMAIL
+
 class Tutor(models.Model):
     avatar_img_path = models.CharField(max_length=300, blank=True)
     facebook_psid = models.CharField(max_length=50)
@@ -31,6 +33,7 @@ class Student(models.Model):
     address = models.CharField(max_length=100, blank=True)
     education_level = models.CharField(max_length=50, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
+    email = models.EmailField(blank=True)
     discord_nick = models.CharField(max_length=50, blank=True)
     facebook_profile = models.CharField(max_length=150, blank=True)
     facebook_psid = models.CharField(max_length=50, blank=True)
@@ -80,6 +83,7 @@ class Lesson(models.Model):
     is_repetitive = models.BooleanField(default=True)
     is_sending_reminder = models.BooleanField(default=True)
     is_facebook_notification_send = models.BooleanField(default=False)
+    is_email_send = models.BooleanField(default=False)
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
 
@@ -89,7 +93,12 @@ class Lesson(models.Model):
         ordering = ['start_datetime']
 
     def __str__(self):
-        return self.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M") + ' ' + self.student.first_name + ' ' + self.student.last_name
+        return f'{self.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M")} {self.student.first_name} {self.student.last_name}'
+
+    def get_lesson_start_and_end_time(self):
+        return '{start} - {end}'.format(start=self.start_datetime.astimezone().strftime("%H:%M"),
+                                        end=self.end_datetime.astimezone().strftime("%H:%M")
+                                        )
 
     def get_absolute_url(self):
         return reverse('lesson-detail', args=[self.id])

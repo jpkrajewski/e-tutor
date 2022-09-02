@@ -93,8 +93,8 @@ def lesson_room(request, room_code):
     if room_code == 'demo':
         return render(request, 'lesson_room.html', {
             'room_name': room_code,
-            'room_type': 'demo',
-            'username': 'student'
+            'username': 'student',
+            'is_lessons_paid': False,
         })
 
     teaching_room = TeachingRoom.objects.filter(url=room_code).first()
@@ -102,11 +102,15 @@ def lesson_room(request, room_code):
         # from teaching room we can get all info we want to customize experience of a lesson
         # print(teaching_room.lesson.student.first_name)
 
+        student = teaching_room.lesson.student
+        lesson = teaching_room.lesson
+
         return render(request, 'lesson_room.html', {
             'room_name': room_code,
-            'room_type': 'lesson',
             'username': 'student',
-            'student_name': teaching_room.lesson.student.first_name,
+            'is_lesson_paid': True,
+            'student': student,
+            'lesson': lesson,
         })
 
     return redirect('home')

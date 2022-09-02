@@ -45,15 +45,16 @@
             </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                 <a class="dropdown-item" target="_blank" href="https://www.oke.waw.pl/files/oke_waw_3498wybrane_wzory_matematyczne_EM2023.pdf.pdf">Karta maturalna</a>
-
         </div>
         </li>
         <li class="nav-item">
         <a class="nav-link" href="#" onclick="saveCanvas()">Save notes as image</a>
       </li>
+        {% if not is_lesson_paid %}
         <li class="nav-item">
-        <a class="nav-link" href="/">Click to see tech stack used</a>
-      </li>
+            <a class="nav-link" href="{ url 'home' }">Click to see tech stack</a>
+        </li>
+        {% endif %}
     </ul>
   </div>
 </nav>
@@ -69,9 +70,21 @@
         <div id="chat">
             <div id="messages">
                 <ul id="message-list" class="list-group list-group-flush">
+                    {% if is_lesson_paid %}
+
+                        {% if user.is_authenticated %}
+                            <li class="list-group-item">Etutor: Witaj, {{ user }}!</li>
+                        {% else %}
+                            <li class="list-group-item">Etutor: Witaj, {{ student.first_name }}!</li>
+                        {% endif %}
+                            <li class="list-group-item">Etutor: Czas trwania lekcji: {{ lesson.get_lesson_start_and_end_time }}</li>
+                            <li class="list-group-item">Etutor: <b>Miłej nauki! &#128170</b></li>
+
+                    {% else %}
                     <li class="list-group-item">Etutor: Welcome to the DEMO lesson room! </li>
-                    <li class="list-group-item">Etutor: To start drawing just use your mouse on a white board like in paint :)</li>
-                    <li class="list-group-item">Etutor: Also lookup my fanpage:  <a target="_blank" href="https://www.facebook.com/alfamatma">Alfamatma.pl</a> </li>
+                        <li class="list-group-item">Etutor: To start drawing just use your mouse on a white board like in paint :)</li>
+                        <li class="list-group-item">Etutor: Also lookup my fanpage:  <a target="_blank" href="https://www.facebook.com/alfamatma">Alfamatma.pl</a></li>
+                    {% endif %}
                 </ul>
             </div>
 
@@ -96,6 +109,10 @@
                 <button onclick="allClear()" class="calc-btn calc-btn-orange">AC</button>
                 <button onclick="del()" class="calc-btn calc-btn-orange">C</button>
                 <button onclick="display('%')" class="calc-btn calc-btn-orange">%</button>
+                <button onclick="display_special('sqrt')" class="calc-btn calc-btn-orange">&#8730</button>
+                <button onclick="display_special('sin')" class="calc-btn calc-btn-orange">Sin</button>
+                <button onclick="display_special('cos')" class="calc-btn calc-btn-orange">Cos</button>
+                <button onclick="display_special('tan')" class="calc-btn calc-btn-orange">Tan</button>
                 <button onclick="display('/')" class="calc-btn calc-btn-orange">&#247</button>
                 <button onclick="display('7')" class="calc-btn">7</button>
                 <button onclick="display('8')" class="calc-btn">8</button>
@@ -135,14 +152,11 @@
         </div>
     </div>
 </footer>
-
         {{ room_name|json_script:"room-name" }}
-
         <script src="{% static 'js/main.js' %}"></script>
         <script src="{% static 'js/calculator.js' %}"></script>
         <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
     </body>
 </html>
