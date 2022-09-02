@@ -8,7 +8,7 @@ let canvas, ctx, flag = false,
 let x = "black",
     y = 2;
 
-
+const userFirstName = JSON.parse(document.getElementById('userFirstName').textContent)
 const username = userFirstName == 'student' ? userFirstName + Math.ceil(Math.random() * 10000) : userFirstName
 
 const messageList = document.getElementById('message-list');

@@ -110,7 +110,6 @@ def lesson_room(request, room_code):
         else:
             username = lesson.student.first_name
 
-
         return render(request, 'lesson_room.html', {
             'room_name': room_code,
             'username': username,
