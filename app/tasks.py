@@ -80,9 +80,10 @@ def organize_done_lessons(self):
         lesson_flow_info = []
         try:
             # delete teaching room
+
             lesson.teachingroom.delete()
             lesson_flow_info.append(f'{str(lesson)} teaching room deleted')
-        except lesson.teachingroom.RelatedObjectDoesNotExist as e:
+        except Exception as e:
             lesson_flow_info.append(f'{str(lesson)} teaching room not deleted: {e}')
 
             # update lesson to be next week
