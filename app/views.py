@@ -102,14 +102,18 @@ def lesson_room(request, room_code):
         # from teaching room we can get all info we want to customize experience of a lesson
         # print(teaching_room.lesson.student.first_name)
 
-        student = teaching_room.lesson.student
+        username = ''
         lesson = teaching_room.lesson
+
+        if request.user.is_authenticated:
+            username = request.user.username
+        else:
+            username = lesson.student.first_name
+
 
         return render(request, 'lesson_room.html', {
             'room_name': room_code,
-            'username': 'student',
-            'is_lesson_paid': True,
-            'student': student,
+            'username': username,
             'lesson': lesson,
         })
 

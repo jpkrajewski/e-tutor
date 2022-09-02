@@ -73,9 +73,7 @@
                     {% if is_lesson_paid %}
 
                         {% if user.is_authenticated %}
-                            <li class="list-group-item">Etutor: Witaj, {{ user }}!</li>
-                        {% else %}
-                            <li class="list-group-item">Etutor: Witaj, {{ student.first_name }}!</li>
+                            <li class="list-group-item">Etutor: Witaj, {{ username }}!</li>
                         {% endif %}
                             <li class="list-group-item">Etutor: Czas trwania lekcji: {{ lesson.get_lesson_start_and_end_time }}</li>
                             <li class="list-group-item">Etutor: <b>Miłej nauki! &#128170</b></li>
@@ -152,6 +150,9 @@
         </div>
     </div>
 </footer>
+
+
+        {{ username|json_script:"userFirstName" }}
         {{ room_name|json_script:"room-name" }}
         <script src="{% static 'js/main.js' %}"></script>
         <script src="{% static 'js/calculator.js' %}"></script>

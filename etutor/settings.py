@@ -24,7 +24,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 SECRET_KEY = 'django-insecure-c=)htg7s(=mslc7^z*hv9pwizf(cwkg89^76hqrvee4gz&lar!'
 
 ALLOWED_HOSTS = ['krajewski.herokuapp.com', 'localhost', '127.0.0.1']
-
 CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'https://krajewski.herokuapp.com']
 LESSON_URL = CSRF_TRUSTED_ORIGINS[0] + ':8000'
 # Application definition

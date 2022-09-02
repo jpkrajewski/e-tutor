@@ -8,7 +8,8 @@ let canvas, ctx, flag = false,
 let x = "black",
     y = 2;
 
-const username = 'student' + Math.ceil(Math.random()*10000)
+
+const username = userFirstName == 'student' ? userFirstName + Math.ceil(Math.random() * 10000) : userFirstName
 
 const messageList = document.getElementById('message-list');
 const sendMessageButton = document.getElementById('btn-send-msg');
@@ -168,6 +169,7 @@ lessonSocket.onopen = event => {
 
 lessonSocket.onclose = event => {
     console.error('Chat socket closed unexpectedly');
+    showChatMessage('Chat socket closed unexpectedly, refresh page.');
 };
 
 lessonSocket.onerror = event => {
