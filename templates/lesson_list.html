@@ -1,15 +1,40 @@
 {% extends 'base.html' %}
 {% block title %}{{ object.first_name }} {{ object.last_name }} info{% endblock %}
 {% block content %}
-<h1>Students</h1>
-<ul>
-{% for student in student_list %}
-    <li>
-        {{ student.first_name }} {{ student.last_name }} <a href="{{ student.get_absolute_url }}">Show</a>
-        <p>{{ student.tutor.id }}</p>
-    </li>
-{% empty %}
-    <li>No articles yet.</li>
-{% endfor %}
-</ul>
+<div class="container-fluid">
+
+    <h1 class="mt-3">Lessons</h1>
+    <div class="row mt-3">
+        {% for day, lessons in lessons_in_day.items %}
+    <div class="col">
+        <table class="table table-bordered table-hover bg-light border">
+          <thead>
+            <tr>
+              <th scope="col">{{day}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lesson in lessons %}
+            <tr>
+                <td>
+                    <p><a href="{{lesson.get_absolute_url}}">{{ lesson.subject }}</a></p>
+                    <p>{{ lesson.get_lesson_start_and_end_time }}</p>
+                    <p><a href="{{lesson.student.get_absolute_url}}">{{ lesson.get_student_info }}</a></p>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td>
+                    <p>No lessons</p>
+                </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+    {% endfor %}
+</div>
+
+</div>
+
 {% endblock %}

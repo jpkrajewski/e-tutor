@@ -1,45 +1,40 @@
 {% extends 'base.html' %}
-{% block title %}Profile{% endblock %}
+{% block title %}Add new student{% endblock %}
 {% block content %}
 <div class="container">
-    <div class="row">
-    <div class="col-8">
-        <h1>Reminders</h1>
-
-
-        <form>
-            <div class="form-outline">
-                <label class="form-label" for="typeNumber">Hours before to send reminder:</label>
-                <input type="number" value="{{ profile.send_reminder_hours_before }}" id="typeNumber" class="form-control" />
+    <div class="row mt-5">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h1>Incoming lessons</h1>
             </div>
-            <div class="form-outline">
-                <label class="form-label" for="textArea1">Message content to you:</label>
-                <textarea class="form-control" id="textArea1" rows="4"></textarea>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for lesson in incoming_lessons_today_and_tomorrow %}
+                        <li class="list-group-item">{{ lesson }} <a href="{{ lesson.get_absolute_url }}">Show</a></li>
+                    {% empty %}
+                        <li class="list-group-item">No lessons yet.</li>
+                    {% endfor %}
+                </ul>
             </div>
-            <div class="form-outline">
-                <label class="form-label" for="textArea2">Message content to students:</label>
-                <textarea class="form-control" id="textArea2" rows="4"></textarea>
-            </div>
-              <button type="submit" class="btn btn-primary mt-3">Submit</button>
-        </form>
+        </div>
     </div>
-    <div class="col-4">
-        <h1>Available message placeholders</h1>
-        <ol class="list-group list-group-numbered mt-3">
-            <li class="list-group-item">{lesson_start}</li>
-            <li class="list-group-item">{lesson_end}</li>
-            <li class="list-group-item">{student_fname} <b>Student's first name</b></li>
-            <li class="list-group-item">{student_lname} <b>Student's last name</b></li>
-            <li class="list-group-item">{lesson_description}</li>
-            <li class="list-group-item">{place}</li>
-            <li class="list-group-item">{subject}</li>
-            <li class="list-group-item">{description}</li>
-            <li class="list-group-item">{address} <b>Student's address</b></li>
-        </ol>
+    <div class="col-6">
+        <div class="card">
+                <div class="card-header">
+                    <h1>Missing Payments</h1>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                    {% for student in students_missing_payments %}
+                        <a href="{{ student.id }}" class="list-group-item list-group-item-action list-group-item-danger">{{ student.first_name }} {{ student.last_name }} <b>Payment due: {{ student.missing_payment }} zł</b></a>
+                    {% empty %}
+                        <a href="#" class="list-group-item list-group-item-action list-group-item-success">Everything paid :)</a>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-
-{{ profile.active }}
-
 {% endblock %}

@@ -1,71 +1,54 @@
 from celery import shared_task
-from .utils import FacebookMessengerAPI, FacebookReminder, FacebookReminderTeachingRoom
-from .models import Tutor, Lesson, TeachingRoom
-from django.utils import timezone
-from datetime import timedelta, datetime
 from secrets import token_urlsafe
 
-
-@shared_task(bind=True)
-def send_lesson_reminder(self):
-    tutors = Tutor.objects.filter(account_active__lte=datetime.now(tz=timezone.utc),
-                                  send_reminders_to_yourself=True)
-
-    if not tutors:
-        return 'No reminders send, because there are no tutors'
-
-    facebook_reminders = []
-    for tutor in tutors:
-        lessons = tutor.lesson_set.get_lessons_for_reminders(
-            hours_before=tutor.send_reminder_hours_before,
-            datetime_now=datetime.now(tz=timezone.utc)
-        )
-        for lesson in lessons:
-            facebook_reminder = FacebookReminder(
-                psid=tutor.int_facebook_psid,
-                template=tutor.message_template_to_yourself,
-                lesson=lesson
-            )
-
-            facebook_reminders.append(facebook_reminder.get_reminder())
-            lesson.is_facebook_notification_send = True
-            lesson.save()
-
-    if not facebook_reminders:
-        return 'No notification to send'
-
-    response = []
-    for reminder in facebook_reminders:
-        response.append(FacebookMessengerAPI.call_send(reminder))
-        response.append(reminder)
-    return response
+from .utils import FacebookMessengerAPI, Reminder, ReminderFacebookWrapper
+from .models import Lesson, TeachingRoom, Payment, Tutor
+from datetime import timedelta, datetime
 
 
 @shared_task(bind=True)
-def create_lesson_room(self):
-    lessons = Lesson.objects.get_lessons_ready_for_creating_teaching_room(datetime_now=datetime.now(tz=timezone.utc))
+def send_lesson_reminders(self):
+
+    lessons = Lesson.objects.get_lessons_for_reminders()
+
     if not lessons:
-        return 'No teaching rooms were created'
+        return 'No reminders to send'
 
     facebook_reminders = []
+    # mail_reminders = []
+    # sms_reminders = []
+
     for lesson in lessons:
-        teaching_room = TeachingRoom(url=token_urlsafe(50), lesson=lesson)
-        teaching_room.save()
-        facebook_teaching_room_reminder = FacebookReminderTeachingRoom(
-            psid=lesson.tutor.int_facebook_psid,
-            template=lesson.tutor.message_template_to_yourself,
-            lesson=lesson,
-            teaching_room=teaching_room
-        )
+        if lesson.place == Lesson.ONLINE:
+            TeachingRoom(lesson=lesson, url=token_urlsafe(16)).save()
 
-        facebook_reminders.append(facebook_teaching_room_reminder.get_reminder())
+        reminder = Reminder(lesson.tutor.message_template_to_tutor, lesson).get_reminder_content()
 
-    response = []
-    for reminder in facebook_reminders:
-        response.append(FacebookMessengerAPI.call_send(reminder))
-        response.append(reminder)
+        # facebook sending
+        if lesson.send_facebook_message:
+            facebook_reminders.append(ReminderFacebookWrapper(lesson.tutor.int_facebook_psid, reminder).get_reminder())
 
-    return 'Rooms created: ' + response
+        # sms sending
+        ...
+        # mail sending
+        ...
+
+        # create missing payment record to track cash flow
+        lp = Payment(student=lesson.student, lesson_date=lesson.start_datetime, amount=lesson.amount)
+        lp.save()
+
+        lesson.is_notification_send = True
+        lesson.save()
+
+    for facebook_reminder in facebook_reminders:
+        FacebookMessengerAPI.call_send(facebook_reminder)
+
+    # for mail_reminder in mail_reminders:
+    ...
+    # for sms_reminder in sms_reminders:
+    ...
+
+    return 'Reminders send'
 
 
 @shared_task(bind=True)
@@ -75,22 +58,22 @@ def organize_done_lessons(self):
     if not done_lessons:
         return 'No lessons were updated'
 
-    response = []
     for lesson in done_lessons:
-        lesson_flow_info = []
-        try:
-            # delete teaching room
-
-            lesson.teachingroom.delete()
-            lesson_flow_info.append(f'{str(lesson)} teaching room deleted')
-        except Exception as e:
-            lesson_flow_info.append(f'{str(lesson)} teaching room not deleted: {e}')
-
-            # update lesson to be next week
+        lesson.is_notification_send = False
         lesson.start_datetime += timedelta(days=7)
         lesson.end_datetime += timedelta(days=7)
         lesson.save()
-        lesson_flow_info.append('Updated successfully')
 
-    response.append(' '.join(lesson_flow_info))
-    return str(response)
+        if lesson.place == Lesson.ONLINE:
+            lesson.teachingroom.delete()
+
+    return 'Organized successfully'
+
+
+@shared_task(bind=True)
+def send_alpha_message(self):
+    """
+    I'm the best.
+    """
+    FacebookMessengerAPI.call_send(ReminderFacebookWrapper(psid=Tutor.objects.get(1).int_facebook_psid, message='Jesteś najlepszy'))
+    return 'Jesteś najlepszy'

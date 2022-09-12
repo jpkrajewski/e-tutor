@@ -1,6 +1,118 @@
 {% extends 'base.html' %}
-{% block title %}{{ student.first_name }} {{ student.last_name }} info{% endblock %}
+{% block title %}{{ student.first_name }} {{ student.last_name }}'s informations{% endblock %}
 {% block content %}
-<h1>{{ student.first_name }}</h1>
-<p>{{ student.last_name }}</p>
+<div class="container">
+    <div class="row mt-3">
+        <div class="col-4">
+            <div class="card" style="height:100%">
+                <div class="card-header">
+                    <h2>{{ student.first_name }} {{ student.last_name }}</h2>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                      <tbody>
+                        <tr>
+                            <td><b>Adress</b></td>
+                          <td>{{ student.address }}</td>
+                        </tr>
+                        <tr>
+                          <td><b>Edu level</b></td>
+                          <td>{{ student.education_level }}</td>
+                        </tr>
+                        <tr>
+                          <td><b>Phone</b></td>
+                          <td>{{ student.phone_number }}</td>
+                        </tr>
+                        <tr>
+                          <td><b>Email</b></td>
+                          <td>{{ student.email }}</td>
+                        </tr>
+                        <tr>
+                          <td><b>Discord</b></td>
+                          <td>{{ student.discord_nick }}</td>
+                        </tr>
+                        <tr>
+                          <td><b>Facebook</b></td>
+                          <td>{{ student.facebook_profile }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="card">
+                <div class="card-header">
+                    <h2> Incoming lessons</h2>
+                </div>
+                <div class="card-body">
+                    {% if lessons %}
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Date</th>
+                            <th scope="col">Place</th>
+                          <th scope="col">Start</th>
+                          <th scope="col">End</th>
+                          <th scope="col">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for lesson in lessons %}
+                        <tr>
+                          <th scope="row">{{ lesson.id }}</th>
+                            <td>{{ lesson.start_date }}</td>
+                            <td>{{ lesson.place }}</td>
+                            <td>{{ lesson.start_hour }}</td>
+                          <td>{{ lesson.end_hour }}</td>
+                          <td>{{ lesson.amount }} zł</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card border-danger mt-4">
+                <div class="card-header">
+                    <h2>Missing payments</h2>
+                </div>
+                <div class="card-body">
+                    {% if total_missing_payment %}
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Lesson date</th>
+                          <th scope="col">Amount</th>
+                          <th scope="col">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for payment in payments %}
+                        <tr>
+                          <th scope="row">{{ payment.id }}</th>
+                          <td>{{ payment.date }}</td>
+                          <td>{{ payment.amount }} zł</td>
+                            <td><button type="button" class="btn btn-success">Change to paid</button></td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                    </table>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Total missing payment: {{total_missing_payment}} zł</b></li>
+                    </ul>
+                    {% else %}
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><b>Everything paid :)</b></li>
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
 {% endblock %}

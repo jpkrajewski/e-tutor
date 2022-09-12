@@ -1,7 +1,7 @@
 import requests
 from django.conf import settings
 from django.http import HttpResponse
-from .models import FacebookMessage, Lesson
+from .models import Lesson
 import json
 from datetime import datetime, timedelta
 from django.conf import settings
@@ -58,7 +58,7 @@ class FacebookMessengerAPI:
         sender_message = post_request['entry'][0]['messaging'][0]['message']['text']
 
         client_data = cls._get_client_data(sender_psid, 'name', 'gender', 'locale', 'timezone')
-        new_msg = FacebookMessage(
+        new_msg = dict(
             full_name=client_data,
             message=sender_message,
             sender_psid=sender_psid,
@@ -103,76 +103,38 @@ class FacebookMessengerAPI:
         return response.json()
 
 
-class FacebookReminder:
-    """Class to create facebook message in corecct format for facebook api"""
+class Reminder:
+    """Class to create message"""
 
-    def __init__(self, psid, template, lesson):
-        self._template = template
-        self._lesson = lesson
+    def __init__(self, template: str, lesson: Lesson):
+        self._message = template.format(
+            start=lesson.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M"),
+            end=lesson.end_datetime.astimezone().strftime("%m/%d/%Y, %H:%M"),
+            sfname=lesson.student.first_name,
+            slname=lesson.student.last_name,
+            description=lesson.description,
+            place=lesson.place,
+            subject=lesson.subject,
+            address=lesson.student.address,
+        )
+
+        if lesson.place == Lesson.ONLINE:
+            self._message += f'\n\nLink do zajęć online: {settings.LESSON_URL}{lesson.teachingroom.get_absolute_url()}'
+
+    def get_reminder_content(self):
+        return self._message
+
+
+class ReminderFacebookWrapper:
+    """Wrapper for reminder to fit into Facebook API requirements"""
+
+    def __init__(self, psid, message):
         self._message = {
             "messaging_type": "MESSAGE_TAG",
             "recipient": {"id": psid},
-            "message": {"text": None}
+            "message": {"text": message}
         }
 
-    def _create_reminder(self):
-        self._message['message']['text'] = self._template.format(
-            lesson_start=self._lesson.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M"),
-            lesson_end=self._lesson.end_datetime.astimezone().strftime("%m/%d/%Y, %H:%M"),
-            student_fname=self._lesson.student.first_name,
-            student_lname=self._lesson.student.last_name,
-            lesson_description=self._lesson.description,
-            place=self._lesson.place,
-            subject=self._lesson.subject,
-            description=self._lesson.description,
-            address=self._lesson.student.address,
-        )
-
     def get_reminder(self):
-        self._create_reminder()
         return self._message
 
-
-class FacebookReminderTeachingRoom(FacebookReminder):
-    def __init__(self, psid, template, lesson, teaching_room):
-        super().__init__(psid, template, lesson)
-        self._teaching_room = teaching_room
-
-    def get_reminder(self):
-        super()._create_reminder()
-        link_to_room = f'\n\nLink to room: {settings.LESSON_URL}{self._teaching_room.get_absolute_url()}'
-        self._message['message']['text'] += link_to_room
-        return self._message
-
-
-class NotificationHandler:
-
-    def __init__(self, tutor_id, hours_before):
-        self.tutor_id = tutor_id
-        self.hours_before = hours_before
-        self.tutor_incoming_lessons = None
-
-    def is_time_to_send_notification(self):
-        self.tutor_incoming_lessons = Lesson.objects.incoming_lessons(self.hours_before, 1)
-        if not self.tutor_incoming_lessons:
-            return False
-        return True
-
-    # TODO: create profiles where tutors can add their own template to send to clients
-    def prepare_notification(self) -> list:
-        """
-        :return: array with dict pair id:client_id, message:message to sent  to send
-        """
-
-        message_template_tutor = 'Hey, masz o {0} zajęcia z {1}'
-        message_template_student = NotImplemented
-
-        notification_array = []
-        for lesson in self.tutor_incoming_lessons:
-            # every incoming lesson by tutors gets taken and send to clients
-            notification_array.append({'sender_psid': 5458874970818405,
-                                       'message': message_template_tutor.format(lesson.lesson_start_datetime,
-                                                                                lesson.student_id.name)
-                                       })
-
-        return notification_array

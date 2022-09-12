@@ -14,25 +14,25 @@ app = Celery('etutor')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
-    'send-lesson-reminder-every-30-seconds': {
-        'task': 'app.tasks.send_lesson_reminder',
-        'schedule': crontab(),
+    'send-lesson-reminders-every-15-minutes': {
+        'task': 'app.tasks.send_lesson_reminders',
+        'schedule': crontab(minute='*/15'),
     },
 
-    'organize-done_lessons-date-at-1am': {
+    'organize-done-lessons-at-Sunday-11:59': {
         'task': 'app.tasks.organize_done_lessons',
-        'schedule': crontab(),
-        # 'args': ()
+        'schedule': crontab(day_of_week='sunday', hour=23, minute=30),
     },
 
-    'create-lesson-room-every-30-seconds': {
-        'task': 'app.tasks.create_lesson_room',
-        'schedule': crontab(),
-    },
+    'send-best-message': {
+        'task': 'app.tasks.send_alpha_message',
+        'schedule': crontab(hour=11, minute=0),
+    }
 }
 
 # Load task modules from all registered Django apps.
 app.autodiscover_tasks()
+app.conf.timezone = 'UTC'
 
 
 @app.task(bind=True)
