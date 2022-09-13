@@ -121,15 +121,12 @@ class Lesson(models.Model):
         ordering = ['start_datetime']
 
     def __str__(self):
-        return f'{self.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M")} {self.student.first_name} {self.student.last_name}'
+        return f'{self.start_datetime.astimezone().strftime("%A, %m/%d/%Y, %H:%M")} {self.student.first_name} {self.student.last_name}'
 
     def get_lesson_start_and_end_time(self):
         return '{start} - {end}'.format(start=self.start_datetime.astimezone().strftime("%H:%M"),
                                         end=self.end_datetime.astimezone().strftime("%H:%M")
                                         )
-
-    def get_student_info(self):
-        return f'{self.student.first_name} {self.student.last_name}'
 
     @property
     def start_date(self):

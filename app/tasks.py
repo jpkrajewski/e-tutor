@@ -73,7 +73,7 @@ def organize_done_lessons(self):
 @shared_task(bind=True)
 def send_alpha_message(self):
     """
-    I'm the best.
+    You are the best.
     """
-    FacebookMessengerAPI.call_send(ReminderFacebookWrapper(psid=Tutor.objects.get(1).int_facebook_psid, message='Jesteś najlepszy'))
+    FacebookMessengerAPI.call_send(ReminderFacebookWrapper(psid=Tutor.objects.get(1).int_facebook_psid, message='Jesteś najlepszy').get_reminder())
     return 'Jesteś najlepszy'

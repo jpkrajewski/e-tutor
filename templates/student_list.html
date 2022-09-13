@@ -9,13 +9,24 @@
                 <h1>All students</h1>
             </div>
             <div class="card-body">
-                <ul class="list-group">
-                    {% for student in student_list %}
-                        <li class="list-group-item">{{ student }} <a href="{{ student.get_absolute_url }}">Show</a></li>
-                    {% empty %}
-                        <li class="list-group-item">No students yet.</li>
-                    {% endfor %}
-                </ul>
+                <table class="table">
+                     <tbody>
+                        {% for student in student_list %}
+                        <tr>
+                            <td>{{ student }}</td>
+                            <td>
+                                <a href="{{ student.get_absolute_url }}">Show</a>
+                                <a href="{{ student.get_absolute_url }}">Edit</a>
+
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td>No students yet.</td>
+                        </tr>
+                        {% endfor %}
+                     </tbody>
+                </table>
             </div>
         </div>
     </div>
