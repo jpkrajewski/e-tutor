@@ -147,7 +147,7 @@ def lesson_room(request, room_code):
         lesson = teaching_room.lesson
 
         if request.user.is_authenticated:
-            username = request.user.username
+            username = request.user.username+'_tutor'
         else:
             username = lesson.student.first_name
 
@@ -155,6 +155,7 @@ def lesson_room(request, room_code):
             'room_name': room_code,
             'username': username,
             'lesson': lesson,
+            'is_lessons_paid': True,
         })
 
     return redirect('home')
