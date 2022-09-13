@@ -18,15 +18,18 @@ class StudentCreateForm(ModelForm):
         cleaned_data = super(StudentCreateForm, self).clean()
         if (Student.objects.filter(tutor=self.tutor, phone_number=cleaned_data['phone_number']).exists()
                 and self.cleaned_data['phone_number']):
-            raise forms.ValidationError('Student with same the phone number already exists')
+            raise forms.ValidationError(
+                'Student with same the phone number already exists')
 
         if (Student.objects.filter(tutor=self.tutor, discord_nick=cleaned_data['discord_nick']).exists()
                 and self.cleaned_data['discord_nick']):
-            raise forms.ValidationError('Student with same the discord nick already exists')
+            raise forms.ValidationError(
+                'Student with same the discord nick already exists')
 
         if (Student.objects.filter(tutor=self.tutor, email=cleaned_data['email']).exists()
                 and self.cleaned_data['email']):
-            raise forms.ValidationError('Student with same the email already exists')
+            raise forms.ValidationError(
+                'Student with same the email already exists')
 
         return cleaned_data
 
@@ -52,7 +55,8 @@ class LessonCreateForm(ModelForm):
         end_datetime = cleaned_data['end_datetime']
 
         if end_datetime < start_datetime:
-            raise forms.ValidationError('Lesson end date has to be later than start date')
+            raise forms.ValidationError(
+                'Lesson end date has to be later than start date')
 
         if start_datetime < datetime.now(tz=timezone.utc):
             raise forms.ValidationError("You can't make date later than now")

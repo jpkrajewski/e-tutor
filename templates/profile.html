@@ -9,13 +9,14 @@
                 <h1>Incoming lessons</h1>
             </div>
             <div class="card-body">
-                <ul class="list-group">
+                <table class="table table-bordered">
                     {% for lesson in incoming_lessons_today_and_tomorrow %}
-                        <li class="list-group-item">{{ lesson }} <a href="{{ lesson.get_absolute_url }}">Show</a></li>
+                        <td>{{ lesson }}</td>
+                        <td><a href="{{ lesson.get_absolute_url }}">Show</a></td>
                     {% empty %}
-                        <li class="list-group-item">No lessons yet.</li>
+                        <td>No lessons yet.</td>
                     {% endfor %}
-                </ul>
+                </table>
             </div>
         </div>
     </div>
@@ -27,11 +28,28 @@
                 <div class="card-body">
                     <div class="list-group">
                     {% for student in students_missing_payments %}
-                        <a href="{{ student.id }}" class="list-group-item list-group-item-action list-group-item-danger">{{ student.first_name }} {{ student.last_name }} <b>Payment due: {{ student.missing_payment }} zł</b></a>
+                        <a href="{% url 'student-detail' student.id %}" class="list-group-item list-group-item-action list-group-item-danger">{{ student.first_name }} {{ student.last_name }} <b>Payment due: {{ student.missing_payment }} zł</b></a>
                     {% empty %}
                         <a href="#" class="list-group-item list-group-item-action list-group-item-success">Everything paid :)</a>
                     {% endfor %}
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    <h1>Money weekly</h1>
+                </div>
+                <div class="card-body">
+                    
+                        {% if money_weekly %}
+                            <h3>{{money_weekly}} zł</h3>
+                        {% else %}
+                            No money.
+                        {% endif %}
                 </div>
             </div>
         </div>

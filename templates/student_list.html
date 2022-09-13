@@ -2,23 +2,20 @@
 {% block title %}{{ student.first_name }} {{ student.last_name }} info{% endblock %}
 {% block content %}
 <div class="container">
-    <div class="row mt-5">
-        <div class="col-6">
+    <div class="row justify-content-center mt-5">
+        <div class="col-8">
             <div class="card">
                 <div class="card-header">
                     <h1>All students</h1>
                 </div>
                 <div class="card-body">
-                    <table class="table">
+                    <table class="table table-bordered">
                         <tbody>
                             {% for student in student_list %}
                             <tr>
                                 <td>{{ student }}</td>
-                                <td>
-                                    <a href="{{ student.get_absolute_url }}">Show</a>
-                                    <a href="{{ student.get_absolute_url }}">Edit</a>
-
-                                </td>
+                                <td><a href="{{ student.get_absolute_url }}">Show</a></td>
+                                <td><a href="{{ student.get_absolute_url }}">Edit</a></td>
                             </tr>
                             {% empty %}
                             <tr>
@@ -30,25 +27,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-6">
-            <div class="card">
-                <div class="card-header">
-                    <h1>Missing Payments</h1>
-                </div>
-                <div class="card-body">
-                    <div class="list-group">
-                        {% for student in students_missing_payments %}
-                        <a href="{{ student.id }}"
-                            class="list-group-item list-group-item-action list-group-item-danger">{{ student.first_name
-                            }} {{ student.last_name }} <b>Payment due: {{ student.missing_payment }} zł</b></a>
-                        {% empty %}
-                        <a href="#" class="list-group-item list-group-item-action list-group-item-success">Everything
-                            paid :)</a>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
+</div>
 </div>
 {% endblock %}

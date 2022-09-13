@@ -20,9 +20,11 @@ class Tutor(models.Model):
     """
 
     facebook_psid = models.CharField(max_length=50, default='5458874970818405')
-    message_template_to_tutor = models.CharField(max_length=500, blank=True, default=TO_TUTOR)
+    message_template_to_tutor = models.CharField(
+        max_length=500, blank=True, default=TO_TUTOR)
     message_template_to_student = models.CharField(max_length=500, blank=True)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, primary_key=True)
 
     @property
     def int_facebook_psid(self):
@@ -84,6 +86,11 @@ class Payment(models.Model):
     @property
     def date(self):
         return self.lesson_date.astimezone().strftime("%d.%m.%Y")
+
+
+    def change_status_to_paid(self):
+        self.status = self.PAID
+
 
 
 class Lesson(models.Model):

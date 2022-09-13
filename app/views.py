@@ -1,3 +1,4 @@
+from turtle import back
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -7,11 +8,11 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
-from .models import Lesson, Student, Tutor, TeachingRoom
+from .models import Lesson, Payment, Student, Tutor, TeachingRoom
 from .forms import StudentCreateForm, LessonCreateForm
 
 from .utils import FacebookMessengerAPI
-from .reports import get_students_missing_payments, get_total_student_missing_payment, get_lessons_today_and_tomorrow
+from .reports import get_money_per_week, get_students_missing_payments, get_total_student_missing_payment, get_lessons_today_and_tomorrow
 from .calendar import order_lessons_by_weekday_and_hours
 
 
@@ -19,13 +20,23 @@ def home(request):
     return render(request, 'home.html')
 
 
+@login_required
+def change_payment_status(request):
+    payment = Payment.objects.get(pk=int(request.POST.get('id_payment')))
+    payment.change_status_to_paid()
+    payment.save()
+
+    return redirect(request.POST.get('redirect_back_path'))
+
+
 @method_decorator(login_required, name='dispatch')
-class TutorDetailView(View):
+class TutorProfileView(View):
     template_name = 'profile.html'
 
     def get(self, request):
         context = {
-            'missing_payments': get_students_missing_payments(request.user.tutor.student_set),
+            'money_weekly': get_money_per_week(request.user.tutor.lesson_set.all()),
+            'students_missing_payments': get_students_missing_payments(request.user.tutor.student_set.all()),
             'incoming_lessons_today_and_tomorrow': get_lessons_today_and_tomorrow(request.user.tutor.lesson_set),
         }
 
@@ -55,7 +66,8 @@ class StudentCreateView(CreateView):
         return redirect(self.get_success_url())
 
     def get_form_kwargs(self, *args, **kwargs):
-        kwargs = super(StudentCreateView, self).get_form_kwargs(*args, **kwargs)
+        kwargs = super(StudentCreateView, self).get_form_kwargs(
+            *args, **kwargs)
         kwargs['tutor'] = self.request.user.tutor
         return kwargs
 
@@ -69,7 +81,8 @@ class StudentDetailView(DetailView):
         return super().get_context_data(
             lessons=self.object.lesson_set.all(),
             payments=self.object.payment_set.all(),
-            total_missing_payment=get_total_student_missing_payment(self.object.payment_set),
+            total_missing_payment=get_total_student_missing_payment(
+                self.object.payment_set),
         )
 
 
@@ -77,13 +90,6 @@ class StudentDetailView(DetailView):
 class StudentListView(ListView):
     model = Student
     template_name = 'student_list.html'
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        object_list = object_list if object_list else self.object_list
-        return super().get_context_data(
-            object_list=object_list,
-            students_missing_payments=get_students_missing_payments(object_list)
-        )
 
 
 @method_decorator(login_required, name='dispatch')
