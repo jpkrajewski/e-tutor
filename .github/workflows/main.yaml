@@ -44,10 +44,4 @@ jobs:
         run: |
           pylint $(git ls-files '*.py')
 
-      - name: Deploy to Heroku
-        uses: jpkrajewski/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: 'krajewski'
-          heroku_email: 'jakubpkrajewski@gmail.com' 
 
