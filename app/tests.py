@@ -1,3 +1,13 @@
-from django.test import TestCase
+from django.test import TestCase, SimpleTestCase
+from django.conf import settings
 
-# Create your tests here.
+
+class RunTest(SimpleTestCase):
+    def test_debug_mode(self):
+        """
+        Debug must be set to False
+        """
+
+        self.assertEqual(settings.DEBUG, False)
+    
+    
