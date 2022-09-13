@@ -11,8 +11,10 @@
             <div class="card-body">
                 <table class="table table-bordered">
                     {% for lesson in incoming_lessons_today_and_tomorrow %}
+                    <tr>
                         <td>{{ lesson }}</td>
                         <td><a href="{{ lesson.get_absolute_url }}">Show</a></td>
+                    <tr>
                     {% empty %}
                         <td>No lessons yet.</td>
                     {% endfor %}
