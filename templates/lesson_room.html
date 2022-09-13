@@ -2,108 +2,119 @@
 
 <!DOCTYPE html>
 <html lang="pl">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-      <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-      <title>Lesson room</title>
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+  <title>Lesson room</title>
 </head>
+
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <a class="navbar-brand" href="/">Etutor</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="#" onclick="erase()">Clear board</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Pen colors
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" href="#" id="green" onclick="color(this)">Green</a>
-                <a class="dropdown-item" href="#" id="blue" onclick="color(this)">Blue</a>
-                <a class="dropdown-item" href="#" id="red" onclick="color(this)">Red</a>
-                <a class="dropdown-item" href="#" id="yellow" onclick="color(this)">Yellow</a>
-                <a class="dropdown-item" href="#" id="red" onclick="color(this)">Red</a>
-                <a class="dropdown-item" href="#" id="orange" onclick="color(this)">Orange</a>
-                <a class="dropdown-item" href="#" id="black" onclick="color(this)">Black</a>
-                <a class="dropdown-item" href="#" id="white" onclick="color(this)">Eraser</a>
-        </div>
-          </li>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="/">Etutor</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="#" onclick="erase()">Clear board</a>
+        </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Helpfull links
-            </a>
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Pen colors
+          </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item" target="_blank" href="https://www.oke.waw.pl/files/oke_waw_3498wybrane_wzory_matematyczne_EM2023.pdf.pdf">Karta maturalna</a>
-        </div>
+            <a class="dropdown-item" href="#" id="green" onclick="color(this)">Green</a>
+            <a class="dropdown-item" href="#" id="blue" onclick="color(this)">Blue</a>
+            <a class="dropdown-item" href="#" id="red" onclick="color(this)">Red</a>
+            <a class="dropdown-item" href="#" id="yellow" onclick="color(this)">Yellow</a>
+            <a class="dropdown-item" href="#" id="red" onclick="color(this)">Red</a>
+            <a class="dropdown-item" href="#" id="orange" onclick="color(this)">Orange</a>
+            <a class="dropdown-item" href="#" id="black" onclick="color(this)">Black</a>
+            <a class="dropdown-item" href="#" id="white" onclick="color(this)">Eraser</a>
+          </div>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            Helpfull links
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" target="_blank"
+              href="https://www.oke.waw.pl/files/oke_waw_3498wybrane_wzory_matematyczne_EM2023.pdf.pdf">Karta
+              maturalna</a>
+          </div>
         </li>
         <li class="nav-item">
-        <a class="nav-link" href="#" onclick="saveCanvas()">Save notes as image</a>
-      </li>
+          <a class="nav-link" href="#" onclick="saveCanvas()">Save notes as image</a>
+        </li>
         {% if not is_lesson_paid %}
         <li class="nav-item">
-            <a class="nav-link" href="{ url 'home' }">Click to see tech stack</a>
+          <a class="nav-link" href="{ url 'home' }">Click to see tech stack</a>
         </li>
         {% endif %}
-    </ul>
-  </div>
-</nav>
-
-
-<main>
-<div class="container-fluid">
-<div class="row fullscreen overflow-hidden">
-    <div class="col-9 canvas-settings">
-        <canvas id="can" width="1800" height="3000"></canvas>
+      </ul>
     </div>
-    <div class="col-3 p-3 bg-secondary">
-        <div id="chat">
+  </nav>
+
+
+  <main>
+    <div class="container-fluid">
+      <div class="row fullscreen overflow-hidden">
+        <div class="col-9 canvas-settings">
+          <canvas id="can" width="1800" height="3000"></canvas>
+        </div>
+        <div class="col-3 p-3 bg-secondary">
+          <div id="chat">
             <div id="messages">
-                <ul id="message-list" class="list-group list-group-flush">
-                    {% if is_lesson_paid %}
+              <ul id="message-list" class="list-group list-group-flush">
+                {% if is_lesson_paid %}
 
-                        {% if user.is_authenticated %}
-                            <li class="list-group-item">Etutor: Witaj, {{ username }}!</li>
-                        {% endif %}
-                            <li class="list-group-item">Etutor: Czas trwania lekcji: {{ lesson.get_lesson_start_and_end_time }}</li>
-                            <li class="list-group-item">Etutor: <b>Miłej nauki! &#128170</b></li>
+                {% if user.is_authenticated %}
+                <li class="list-group-item">Etutor: Witaj, {{ username }}!</li>
+                {% endif %}
+                <li class="list-group-item">Etutor: Czas trwania lekcji: {{ lesson.get_lesson_start_and_end_time }}</li>
+                <li class="list-group-item">Etutor: <b>Miłej nauki! &#128170</b></li>
 
-                    {% else %}
-                    <li class="list-group-item">Etutor: Welcome to the DEMO lesson room! </li>
-                        <li class="list-group-item">Etutor: To start drawing just use your mouse on a white board like in paint :)</li>
-                        <li class="list-group-item">Etutor: Also lookup my fanpage:  <a target="_blank" href="https://www.facebook.com/alfamatma">Alfamatma.pl</a></li>
-                    {% endif %}
-                </ul>
+                {% else %}
+                <li class="list-group-item">Etutor: Welcome to the DEMO lesson room! </li>
+                <li class="list-group-item">Etutor: To start drawing just use your mouse on a white board like in paint
+                  :)</li>
+                <li class="list-group-item">Etutor: Also lookup my fanpage: <a target="_blank"
+                    href="https://www.facebook.com/alfamatma">Alfamatma.pl</a></li>
+                {% endif %}
+              </ul>
             </div>
 
             <div class="input-group mb-3">
-                <input id="msg" type="text" class="form-control" placeholder="Type your chat message..." aria-label="Recipient's username" aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                  <button class="btn btn-warning btn-chat" type="button" id="btn-send-msg">Send</button>
+              <input id="msg" type="text" class="form-control" placeholder="Type your chat message..."
+                aria-label="Recipient's username" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <button class="btn btn-warning btn-chat" type="button" id="btn-send-msg">Send</button>
               </div>
             </div>
-<!--            <button id="btn-share-screen">Share screen</button>-->
-        </div>
+            <!--            <button id="btn-share-screen">Share screen</button>-->
+          </div>
 
-        <div class="calc-container mt-5 mb-5">
-        <div class="calc-body">
-            <div class="result-display">
+          <div class="calc-container mt-5 mb-5">
+            <div class="calc-body">
+              <div class="result-display">
                 <h1 id="result-display">0</h1>
-            </div>
-            <div class="calc-display">
+              </div>
+              <div class="calc-display">
                 <h3 id="calc-display"></h3>
-            </div>
-            <div class="btn-wrap">
+              </div>
+              <div class="btn-wrap">
                 <button onclick="allClear()" class="calc-btn calc-btn-orange">AC</button>
                 <button onclick="del()" class="calc-btn calc-btn-orange">C</button>
                 <button onclick="display('%')" class="calc-btn calc-btn-orange">%</button>
@@ -127,37 +138,44 @@
                 <button onclick="display('0')" class="calc-btn">0</button>
                 <button onclick="display('.')" class="calc-btn calc-btn-orange">.</button>
                 <button onclick="calculate()" class="calc-btn calc-btn-lg">=</button>
+              </div>
             </div>
+          </div>
+
         </div>
+      </div>
     </div>
+    <!--        <div id="video-container" class="col-6">-->
+    <!--            <div><video id="local-video" style="float: left" autoplay playsinline></video></div>-->
+    <!--            <button id="btn-toggle-audio">Audio mute</button>-->
+    <!--            <button id="btn-toggle-video">Video off</button>-->
+    <!--        </div>-->
 
-    </div>
-  </div>
-</div>
-<!--        <div id="video-container" class="col-6">-->
-<!--            <div><video id="local-video" style="float: left" autoplay playsinline></video></div>-->
-<!--            <button id="btn-toggle-audio">Audio mute</button>-->
-<!--            <button id="btn-toggle-video">Video off</button>-->
-<!--        </div>-->
-
-</main>
-<footer>
+  </main>
+  <footer>
     <div class="container-fluid bg-dark">
-        <div class="row">
-            <div class="col-12 text-center p-3 text-white">
-                <p>Made by Krajewski</p>
-            </div>
+      <div class="row">
+        <div class="col-12 text-center p-3 text-white">
+          <p>Made by Krajewski</p>
         </div>
+      </div>
     </div>
-</footer>
+  </footer>
 
 
-        {{ username|json_script:"userFirstName" }}
-        {{ room_name|json_script:"room-name" }}
-        <script src="{% static 'js/main.js' %}"></script>
-        <script src="{% static 'js/calculator.js' %}"></script>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    </body>
+  {{ username|json_script:"userFirstName" }}
+  {{ room_name|json_script:"room-name" }}
+  <script src="{% static 'js/main.js' %}"></script>
+  <script src="{% static 'js/calculator.js' %}"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+</body>
+
 </html>

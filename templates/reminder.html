@@ -3,41 +3,42 @@
 {% block content %}
 <div class="container">
     <div class="row">
-    <div class="col-8">
-        <h1>Reminders</h1>
+        <div class="col-8">
+            <h1>Reminders</h1>
 
 
-        <form>
-            <div class="form-outline">
-                <label class="form-label" for="typeNumber">Hours before to send reminder:</label>
-                <input type="number" value="{{ profile.send_reminder_hours_before }}" id="typeNumber" class="form-control" />
-            </div>
-            <div class="form-outline">
-                <label class="form-label" for="textArea1">Message content to you:</label>
-                <textarea class="form-control" id="textArea1" rows="4"></textarea>
-            </div>
-            <div class="form-outline">
-                <label class="form-label" for="textArea2">Message content to students:</label>
-                <textarea class="form-control" id="textArea2" rows="4"></textarea>
-            </div>
-              <button type="submit" class="btn btn-primary mt-3">Submit</button>
-        </form>
+            <form>
+                <div class="form-outline">
+                    <label class="form-label" for="typeNumber">Hours before to send reminder:</label>
+                    <input type="number" value="{{ profile.send_reminder_hours_before }}" id="typeNumber"
+                        class="form-control" />
+                </div>
+                <div class="form-outline">
+                    <label class="form-label" for="textArea1">Message content to you:</label>
+                    <textarea class="form-control" id="textArea1" rows="4"></textarea>
+                </div>
+                <div class="form-outline">
+                    <label class="form-label" for="textArea2">Message content to students:</label>
+                    <textarea class="form-control" id="textArea2" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
+        </div>
+        <div class="col-4">
+            <h1>Available message placeholders</h1>
+            <ol class="list-group list-group-numbered mt-3">
+                <li class="list-group-item">{lesson_start}</li>
+                <li class="list-group-item">{lesson_end}</li>
+                <li class="list-group-item">{student_fname} <b>Student's first name</b></li>
+                <li class="list-group-item">{student_lname} <b>Student's last name</b></li>
+                <li class="list-group-item">{lesson_description}</li>
+                <li class="list-group-item">{place}</li>
+                <li class="list-group-item">{subject}</li>
+                <li class="list-group-item">{description}</li>
+                <li class="list-group-item">{address} <b>Student's address</b></li>
+            </ol>
+        </div>
     </div>
-    <div class="col-4">
-        <h1>Available message placeholders</h1>
-        <ol class="list-group list-group-numbered mt-3">
-            <li class="list-group-item">{lesson_start}</li>
-            <li class="list-group-item">{lesson_end}</li>
-            <li class="list-group-item">{student_fname} <b>Student's first name</b></li>
-            <li class="list-group-item">{student_lname} <b>Student's last name</b></li>
-            <li class="list-group-item">{lesson_description}</li>
-            <li class="list-group-item">{place}</li>
-            <li class="list-group-item">{subject}</li>
-            <li class="list-group-item">{description}</li>
-            <li class="list-group-item">{address} <b>Student's address</b></li>
-        </ol>
-    </div>
-  </div>
 </div>
 
 
