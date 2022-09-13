@@ -155,7 +155,7 @@ def lesson_room(request, room_code):
             'room_name': room_code,
             'username': username,
             'lesson': lesson,
-            'is_lessons_paid': True,
+            'is_lesson_paid': True,
         })
 
     return redirect('home')
