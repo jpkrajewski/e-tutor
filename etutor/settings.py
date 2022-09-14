@@ -138,6 +138,7 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Warsaw'
 
-if not DEBUG:
+import os
+if '/app' in os.environ['HOME']:
     import django_heroku
     django_heroku.settings(locals())
