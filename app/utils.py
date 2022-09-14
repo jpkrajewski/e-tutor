@@ -38,7 +38,8 @@ class FacebookMessengerAPI:
         page_access_token = settings.FACEBOOK_PAGE_ACCESS_TOKEN
 
         headers = {'content-type': 'application/json'}
-        url = 'https://graph.facebook.com/v14.0/me/messages?access_token={}'.format(page_access_token)
+        url = 'https://graph.facebook.com/v14.0/me/messages?access_token={}'.format(
+            page_access_token)
         response = requests.post(url, json=payload, headers=headers)
 
         return response.json()
@@ -57,7 +58,8 @@ class FacebookMessengerAPI:
         sender_psid = post_request['entry'][0]['messaging'][0]['sender']['id']
         sender_message = post_request['entry'][0]['messaging'][0]['message']['text']
 
-        client_data = cls._get_client_data(sender_psid, 'name', 'gender', 'locale', 'timezone')
+        client_data = cls._get_client_data(
+            sender_psid, 'name', 'gender', 'locale', 'timezone')
         new_msg = dict(
             full_name=client_data,
             message=sender_message,
@@ -137,4 +139,8 @@ class ReminderFacebookWrapper:
 
     def get_reminder(self):
         return self._message
+
+
+
+
 

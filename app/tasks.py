@@ -53,21 +53,37 @@ def send_lesson_reminders(self):
 
 @shared_task(bind=True)
 def organize_done_lessons(self):
+    """
+    Organize done lessons:
+    
+    1. Delete non repetitive lessons
+    2. Update repetitive lessons for next week
+    """
     done_lessons = Lesson.objects.get_done_lessons()
 
     if not done_lessons:
         return 'No lessons were updated'
 
+    log = []
+
     for lesson in done_lessons:
+
+        if lesson.place == Lesson.ONLINE:
+            log.append(f'Teaching room with id: {lesson.teachingroom.id}, has been deleted.')
+            lesson.teachingroom.delete()
+
+        if lesson.is_repetitive is False:
+            log.append(f'Lesson with id: {lesson.id} has been deleted.')
+            lesson.delete()
+            continue
+
         lesson.is_notification_send = False
         lesson.start_datetime += timedelta(days=7)
         lesson.end_datetime += timedelta(days=7)
         lesson.save()
+        log.append(f'Lesson with id: {lesson.id} has been updated.')
 
-        if lesson.place == Lesson.ONLINE:
-            lesson.teachingroom.delete()
-
-    return 'Organized successfully'
+    return '\n'.join(log)
 
 
 @shared_task(bind=True)

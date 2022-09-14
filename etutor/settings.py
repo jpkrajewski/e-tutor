@@ -10,23 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
+import environ
 from pathlib import Path
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATES_DIR = BASE_DIR / 'templates'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c=)htg7s(=mslc7^z*hv9pwizf(cwkg89^76hqrvee4gz&lar!'
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+env.read_env(BASE_DIR / '.env')
 
-ALLOWED_HOSTS = ['krajewski.herokuapp.com', 'localhost', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'https://krajewski.herokuapp.com']
+DEBUG = env('DEBUG')
+SECRET_KEY = env('SECRET_KEY')
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 LESSON_URL = CSRF_TRUSTED_ORIGINS[0] + ':8000'
-# Application definition
+
+FACEBOOK_PAGE_ACCESS_TOKEN = env('FACEBOOK_PAGE_ACCESS_TOKEN')
+FACEBOOK_PAGE_VERIFY_TOKEN = env('FACEBOOK_PAGE_VERIFY_TOKEN')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -71,8 +75,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'etutor.wsgi.application'
 ASGI_APPLICATION = 'etutor.asgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -80,9 +82,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -99,9 +98,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Europe/Warsaw'
@@ -110,17 +106,11 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
-
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -133,30 +123,21 @@ LOGIN_REDIRECT_URL = 'home'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
 
-# Facebook fan page access
-FACEBOOK_PAGE_ACCESS_TOKEN = 'EAAIE42HZBvzkBAByZBluiDXuHvpk7UkwyZBDZCKckGDXMjFMlE83D9D6LbKJ7ucChId12GsxFLBYuaC9Xs0KG7iI7xX4KXGEa14ejjbx32yUwt51DEUJkXTdSBHVtC9JNtzghU9IhSEWU7sgT2gmkS2qItRd4OVbbfAt4QEYUdyqeECEGm8b'
-FACEBOOK_PAGE_VERIFY_TOKEN = '7xX4KXGEa14ejjbx32yUwt51DEUJkXTdSBHVtC9JNtzg'
-
-# Websocket-Redis connection
-REDIS_HOST = 'redis://127.0.0.1:6379' if DEBUG else os.getenv('REDISCLOUD_URL')
-
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [REDIS_HOST],
+            "hosts": env.list('REDIS_URL'),
         },
     },
 }
 
-# Celery config
-CELERY_BROKER_URL = REDIS_HOST
+CELERY_BROKER_URL = env.list('REDIS_URL')
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Warsaw'
 
 if not DEBUG:
-    LESSON_URL = CSRF_TRUSTED_ORIGINS[1]
     import django_heroku
     django_heroku.settings(locals())

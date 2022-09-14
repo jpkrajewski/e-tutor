@@ -41,6 +41,12 @@
                     <li class="list-group-item">
                         Description: {{ lesson.description }}
                     </li>
+                    <li class="list-group-item">
+                      Repetitive: {{ lesson.is_repetitive }}
+                  </li>
+                  <li class="list-group-item">
+                    <a href="{% url 'lesson-edit' lesson.id %}"><button class="btn btn-primary">Edit</button></a>
+                </li>
                 </ul>
             </div>
         </div>

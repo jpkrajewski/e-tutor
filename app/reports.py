@@ -1,4 +1,6 @@
 from django.db.models import Sum
+from django.utils import timezone
+
 from datetime import datetime, time, timedelta
 from .models import Payment
 
@@ -29,14 +31,14 @@ def get_lessons_today_and_tomorrow(queryset):
     end_of_a_tomorrow = datetime.combine(
         datetime.today(), time.max) + timedelta(days=1)
 
-    return queryset.filter(start_datetime__range=(start_of_a_day, end_of_a_tomorrow))
+    return queryset.filter(start_datetime__range=(start_of_a_day, end_of_a_tomorrow)).filter(start_datetime__gte=datetime.now(tz=timezone.utc))
 
 
 def get_money_per_week(queryset) -> int:
     """
     Tutor lessons queryset
     """
-    now = datetime.now()
+    now = datetime.now(tz=timezone.utc)
     start = now - timedelta(days=now.weekday())
     end = start + timedelta(days=6)
 

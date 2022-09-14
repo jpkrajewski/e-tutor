@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Add new student{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        <div class="col-8">
+            <div class="card">
+              <div class="card-header">
+                <h1>Create new students from CSV</h1>
+              </div>
+              <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                        {{form.as_p}}
+                    <input type="submit" class="btn btn-primary" value="Load to database">
+                </form>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

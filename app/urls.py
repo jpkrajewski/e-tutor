@@ -16,6 +16,8 @@ urlpatterns = [
 
     path('students/create/', views.StudentCreateView.as_view(),
          name='students-create'),
+     path('students/create-from-csv/', views.StudentCreateFromCSVView.as_view(),
+     name='student-create-from-csv'),
     path('students/<int:pk>', views.StudentDetailView.as_view(),
          name='student-detail'),
     path('students/', views.StudentListView.as_view(), name='students'),
@@ -23,6 +25,7 @@ urlpatterns = [
     path('lesson/<str:room_code>/', views.lesson_room, name='teaching-room'),
     path('lessons/create/', views.LessonCreateView.as_view(), name='lessons-create'),
     path('lessons/<int:pk>/', views.LessonDetailView.as_view(), name='lesson-detail'),
+    path('lessons/<int:pk>/edit', views.LessonUpdateView.as_view(), name='lesson-edit'),
     path('lessons/', views.LessonListView.as_view(), name='lessons'),
 
     path('change-payment-status', views.change_payment_status,

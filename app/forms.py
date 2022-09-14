@@ -1,11 +1,13 @@
 from datetime import datetime
+from typing import Any, Dict, Optional
+
 from django import forms
 from django.utils import timezone
-from django.forms import ModelForm, DateTimeInput, Textarea
+from django.forms import DateTimeInput, Textarea
 from .models import Student, Lesson, Tutor
 
 
-class StudentCreateForm(ModelForm):
+class StudentCreateForm(forms.ModelForm):
     class Meta:
         model = Student
         exclude = ('tutor',)
@@ -34,7 +36,7 @@ class StudentCreateForm(ModelForm):
         return cleaned_data
 
 
-class LessonCreateForm(ModelForm):
+class LessonCreateForm(forms.ModelForm):
     class Meta:
         model = Lesson
         exclude = ('tutor', 'is_notification_send', )
@@ -62,3 +64,7 @@ class LessonCreateForm(ModelForm):
             raise forms.ValidationError("You can't make date later than now")
 
         return cleaned_data
+
+
+class StudentCreateFromCSVForm(forms.Form):
+    csv_with_students = forms.FileField(widget=forms.widgets.FileInput(attrs={'accept': '.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel'}))

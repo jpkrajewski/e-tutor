@@ -41,8 +41,8 @@ class Student(models.Model):
     address = models.CharField(max_length=100, blank=True)
     education_level = models.CharField(max_length=50, blank=True)
 
-    phone_number = models.CharField(max_length=20, blank=True)
-    email = models.EmailField(blank=True)
+    phone_number = models.CharField(max_length=20, blank=True, unique=True)
+    email = models.EmailField(blank=True, unique=True)
     discord_nick = models.CharField(max_length=50, blank=True)
     facebook_profile = models.CharField(max_length=150, blank=True)
     facebook_psid = models.CharField(max_length=50, blank=True)
@@ -61,11 +61,11 @@ class LessonManager(models.Manager):
         now = datetime.now(tz=timezone.utc)
         return (self
                 .filter(start_datetime__gte=now,
-                        start_datetime__lte=now + timedelta(hours=1))
+                        start_datetime__lte=now + timedelta(hours=3))
                 .filter(is_notification_send=False))
 
     def get_done_lessons(self):
-        return self.filter(end_datetime__lt=datetime.now(tz=timezone.utc), is_repetitive=True)
+        return self.filter(end_datetime__lt=datetime.now(tz=timezone.utc))
 
 
 class Payment(models.Model):

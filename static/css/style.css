@@ -106,5 +106,12 @@
 }
 
 .bg-calendar {
-    background-color: #grey;
+    color:  white !important;
+    background-color: rgba(27, 78, 78, 0.714);
+    border-radius: 10px;
+
+}
+
+ .bg-calendar a{
+    color: white !important;
 }

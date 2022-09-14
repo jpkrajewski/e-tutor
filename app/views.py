@@ -1,3 +1,5 @@
+from typing import Any, Dict
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -8,12 +10,12 @@ from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
 from .models import Lesson, Payment, Student, Tutor, TeachingRoom
-from .forms import StudentCreateForm, LessonCreateForm
+from .forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
 
 from .utils import FacebookMessengerAPI
 from .reports import get_money_per_week, get_students_missing_payments, get_total_student_missing_payment, get_lessons_today_and_tomorrow
-from .calendar import order_lessons_by_weekday_and_hours
-
+from .calendar import order_lessons_from_this_week_by_days_and_hours, order_lessons_from_next_week_by_days_and_hours
+from .library.etl_csv import etl_student_csv
 
 def home(request):
     return render(request, 'home.html')
@@ -71,6 +73,27 @@ class StudentCreateView(CreateView):
         return kwargs
 
 
+class StudentCreateFromCSVView(View):
+    form_class = StudentCreateFromCSVForm
+    template_name = 'student_create_from_csv_form.html'
+
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {'form': self.form_class()})
+
+    
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+
+            # TODO feedback
+            feedback = etl_student_csv.etl(request.FILES['csv_with_students'], request.user.tutor)
+            
+            return redirect('students')
+
+        return render(request, self.template_name, {'form': form})
+
+
 @method_decorator(login_required, name='dispatch')
 class StudentDetailView(DetailView):
     model = Student
@@ -109,6 +132,24 @@ class LessonCreateView(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
+class LessonUpdateView(UpdateView):
+    template_name = 'lesson_create_form.html'
+    form_class = LessonCreateForm
+    model = Lesson
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.tutor = self.request.user.tutor
+        self.object.save()
+        return redirect(self.get_success_url())
+
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(LessonUpdateView, self).get_form_kwargs(*args, **kwargs)
+        kwargs['tutor'] = self.request.user.tutor
+        return kwargs
+
+
+@method_decorator(login_required, name='dispatch')
 class LessonDetailView(DetailView):
     model = Lesson
     template_name = 'lesson_detail.html'
@@ -123,7 +164,8 @@ class LessonListView(ListView):
         object_list = object_list if object_list else self.object_list
         return super(LessonListView, self).get_context_data(
             object_list=object_list,
-            lessons_in_day=order_lessons_by_weekday_and_hours(object_list),
+            lessons_this_week=order_lessons_from_this_week_by_days_and_hours(object_list),
+            lessons_next_week=order_lessons_from_next_week_by_days_and_hours(object_list,)
         )
 
 
