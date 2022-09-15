@@ -27,7 +27,7 @@ def etl(csv_file, tutor):
         clean_data = []
         for student_info in dirty_data[1:]:
             # Capitalize data from csv, strip from white space and remove '\r\n'
-            clean_info = capitalize_strip_remove_rn(student_info)
+            clean_info = strip_remove_rn(student_info)
             clean_data.append(map_keys_to_headers(
                 zip(clean_headers, clean_info)))
 
@@ -52,11 +52,6 @@ def etl(csv_file, tutor):
 
     # sort by type
     return sorted(feedback, key=lambda x: x['type'], reverse=True)
-
-
-def capitalize_strip_remove_rn(arr: list) -> list:
-    return (list(map(lambda x: x.capitalize().strip(), arr)) + [arr[-1].replace('\r\n', '').rstrip()])
-
 
 def strip_remove_rn(arr: list) -> list:
     return (list(map(lambda x: x.strip(), arr)) + [arr[-1].replace('\r\n', '').rstrip()])

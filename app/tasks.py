@@ -7,7 +7,7 @@ from datetime import timedelta, datetime
 
 
 @shared_task(bind=True)
-def send_lesson_reminders(self):
+def check_ready_lessons_create_lesson_rooms_send_reminders_create_payments(self):
 
     lessons = Lesson.objects.get_lessons_for_reminders()
 
@@ -22,11 +22,11 @@ def send_lesson_reminders(self):
         if lesson.place == Lesson.ONLINE:
             TeachingRoom(lesson=lesson, url=token_urlsafe(16)).save()
 
-        reminder = Reminder(lesson.tutor.message_template_to_tutor, lesson).get_reminder_content()
+        reminder = Reminder(lesson.tutor.message_template_to_tutor, lesson).get_content()
 
         # facebook sending
         if lesson.send_facebook_message:
-            facebook_reminders.append(ReminderFacebookWrapper(lesson.tutor.int_facebook_psid, reminder).get_reminder())
+            facebook_reminders.append(ReminderFacebookWrapper(lesson.tutor.int_facebook_psid, reminder).get_message())
 
         # sms sending
         ...
@@ -91,5 +91,5 @@ def send_alpha_message(self):
     """
     You are the best.
     """
-    FacebookMessengerAPI.call_send(ReminderFacebookWrapper(psid=Tutor.objects.get(1).int_facebook_psid, message='Jesteś najlepszy').get_reminder())
+    FacebookMessengerAPI.call_send(ReminderFacebookWrapper(psid=Tutor.objects.get(1).int_facebook_psid, message='Jesteś najlepszy').get_message())
     return 'Jesteś najlepszy'

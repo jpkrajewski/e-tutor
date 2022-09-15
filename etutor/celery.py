@@ -14,9 +14,9 @@ app = Celery('etutor')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 app.conf.beat_schedule = {
-    'send-lesson-reminders-every-15-minutes': {
-        'task': 'app.tasks.send_lesson_reminders',
-        'schedule': crontab(minute='*/10'),
+    'check-ready-lessons-create-lesson-rooms-send-reminders-create-payments-every-5min': {
+        'task': 'app.tasks.check_ready_lessons_create_lesson_rooms_send_reminders_create_payments',
+        'schedule': crontab(minute='*/5'),
     },
 
     'organize-done-lessons-at-Sunday-11:59': {

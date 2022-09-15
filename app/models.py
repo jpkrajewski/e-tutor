@@ -50,7 +50,7 @@ class Student(models.Model):
     tutor = models.ForeignKey(Tutor, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return f'{self.first_name.capitalize()} {self.last_name.capitalize()}'
 
     def get_absolute_url(self):
         return reverse('student-detail', args=[self.id])

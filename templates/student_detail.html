@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}{{ student.first_name }} {{ student.last_name }}'s informations{% endblock %}
+{% block title %}{{ student }}'s informations{% endblock %}
 {% block content %}
 <div class="container">
   <div class="row justify-content-center">
     <div class="col-8">
       <div class="card mt-4">
         <div class="card-header">
-          <h2>{{ student.first_name }} {{ student.last_name }}</h2>
+          <h2>{{ student }}</h2>
         </div>
         <div class="card-body">
           <table class="table table-bordered">

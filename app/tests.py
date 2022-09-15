@@ -3,11 +3,11 @@ from datetime import datetime, timedelta, tzinfo
 from django.utils import timezone
 from django.test import TestCase, SimpleTestCase
 from django.conf import settings
-
-from .models import Tutor, Student, Lesson
 from django.contrib.auth.models import User
 
+from .models import Tutor, Student, Lesson
 from .tasks import organize_done_lessons
+from .utils import FacebookMessengerAPI, ReminderFacebookWrapper, Reminder
 
 
 class DebugTest(SimpleTestCase):
@@ -67,3 +67,27 @@ class TasksLessonsTest(TestCase):
         log = organize_done_lessons()
         self.assertEqual(Lesson.objects.filter(start_datetime=yesterday + timedelta(days=7)).first(), lesson)
         self.assertEqual(log, 'Lesson with id: 1 has been updated.')
+
+
+    def test_sending_reminders(self):
+        """
+        Test sending message to fb
+        """
+
+        now = datetime.now(tz=timezone.utc)
+        lesson = Lesson.objects.create(subject='Math', 
+                            place=Lesson.AT_TUTORS, 
+                            amount=100, 
+                            is_repetitive=True, 
+                            start_datetime=now, 
+                            end_datetime=now, 
+                            tutor=self.tutor, 
+                            student=self.student
+                        )
+
+
+        content = Reminder('Works', lesson).get_content()
+        fb_wrapper = ReminderFacebookWrapper(self.tutor.facebook_psid, content)
+        self.assertEqual(FacebookMessengerAPI.call_send(fb_wrapper.get_message())['recipient_id'], self.tutor.facebook_psid)
+
+    

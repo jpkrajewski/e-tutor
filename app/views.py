@@ -194,11 +194,19 @@ class LessonListView(ListView):
 
 @csrf_exempt
 def facebook_messenger_webhook(request):
-    if request.method == 'GET':
-        return FacebookMessengerAPI.validate_webhook(request)
+    """
+    Handle facebook callback, don't work
 
-    if request.method == 'POST':
-        return FacebookMessengerAPI.handle_post_request(request)
+    My app doesn't meet the criteria
+    Soon it will
+    """
+
+
+    # if request.method == 'GET':
+    #     return FacebookMessengerAPI.validate_webhook(request)
+
+    # if request.method == 'POST':
+    #     return FacebookMessengerAPI.handle_post_request(request)
 
 
 def lesson_room(request, room_code):
