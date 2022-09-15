@@ -89,7 +89,7 @@ class TasksLessonsTest(TestCase):
         content = Reminder('Works', lesson).get_content()
         fb_wrapper = ReminderFacebookWrapper(self.tutor.facebook_psid, content)
         response = FacebookMessengerAPI.call_send(fb_wrapper.get_message())
-        self.assertEqual(response['recipient_id'], self.tutor.facebook_psid, 
+        self.assertEqual(response.get('recipient_id', None), self.tutor.facebook_psid, 
             msg=f'Response recipient id should be: {self.tutor.facebook_psid}, instead got response {response}')
 
     
