@@ -1,3 +1,5 @@
+from multiprocessing import managers
+import re
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta
@@ -151,9 +153,16 @@ class Lesson(models.Model):
         return reverse('lesson-detail', args=[self.id])
 
 
+class TeachingRoomManager(models.Manager):
+    def get_inactive(self):
+        return self.filter(lesson__end_datetime__lt=datetime.now(tz=timezone.utc))
+
+
 class TeachingRoom(models.Model):
     url = models.CharField(max_length=300)
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE)
+
+    objects = TeachingRoomManager()
 
     def __str__(self):
         return self.lesson.student.first_name

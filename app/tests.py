@@ -1,12 +1,13 @@
 from datetime import datetime, timedelta, tzinfo
+from operator import le
 
 from django.utils import timezone
 from django.test import TestCase, SimpleTestCase
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from .models import Tutor, Student, Lesson
-from .tasks import organize_done_lessons
+from .models import TeachingRoom, Tutor, Student, Lesson
+from .tasks import set_repetitive_lessons_to_next_week, delete_inactive_teaching_rooms
 from .utils import FacebookMessengerAPI, ReminderFacebookWrapper, Reminder
 
 
@@ -44,7 +45,7 @@ class TasksLessonsTest(TestCase):
                                 student=self.student
                             )
         
-        log = organize_done_lessons()
+        log = set_repetitive_lessons_to_next_week()
         self.assertQuerysetEqual(Lesson.objects.all(), Lesson.objects.none())
         self.assertEqual(log, 'Lesson with id: 1 has been deleted.')
 
@@ -64,7 +65,7 @@ class TasksLessonsTest(TestCase):
                                 student=self.student
                             )
         
-        log = organize_done_lessons()
+        log = set_repetitive_lessons_to_next_week()
         self.assertEqual(Lesson.objects.filter(start_datetime=yesterday + timedelta(days=7)).first(), lesson)
         self.assertEqual(log, 'Lesson with id: 1 has been updated.')
 
@@ -93,3 +94,19 @@ class TasksLessonsTest(TestCase):
             msg=f'Response recipient id should be: {self.tutor.facebook_psid}, instead got response {response}')
 
     
+    def test_deleting_inactive_rooms(self):
+        now = datetime.now(tz=timezone.utc) - timedelta(hours=1)
+        lesson = Lesson.objects.create(subject='Math', 
+                            place=Lesson.AT_TUTORS, 
+                            amount=100, 
+                            is_repetitive=True, 
+                            start_datetime=now, 
+                            end_datetime=now, 
+                            tutor=self.tutor, 
+                            student=self.student
+                        )
+        
+        TeachingRoom.objects.create(url='123', lesson=lesson)
+        delete_inactive_teaching_rooms()
+
+        self.assertQuerysetEqual(TeachingRoom.objects.all(), TeachingRoom.objects.none())

@@ -52,7 +52,7 @@ def check_ready_lessons_create_lesson_rooms_send_reminders_create_payments(self)
 
 
 @shared_task(bind=True)
-def organize_done_lessons(self):
+def set_repetitive_lessons_to_next_week(self):
     """
     Organize done lessons:
     
@@ -72,10 +72,6 @@ def organize_done_lessons(self):
 
     for lesson in done_lessons:
 
-        if lesson.place == Lesson.ONLINE:
-            log.append(f'Teaching room with id: {lesson.teachingroom.id}, has been deleted.')
-            lesson.teachingroom.delete()
-
         if lesson.is_repetitive is False:
             log.append(f'Lesson with id: {lesson.id} has been deleted.')
             lesson.delete()
@@ -88,6 +84,20 @@ def organize_done_lessons(self):
         log.append(f'Lesson with id: {lesson.id} has been updated.')
 
     return '\n'.join(log)
+
+
+@shared_task(bind=True)
+def delete_inactive_teaching_rooms(self):
+    teaching_rooms = TeachingRoom.objects.get_inactive()
+    
+    if not teaching_rooms:
+        return 'No teaching rooms to delete'
+
+    for room in teaching_rooms:
+        room.delete()
+    
+    return 'Inactive rooms deleted'
+    
 
 
 @shared_task(bind=True)

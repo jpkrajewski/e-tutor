@@ -19,9 +19,14 @@ app.conf.beat_schedule = {
         'schedule': crontab(minute='*/5'),
     },
 
-    'organize-done-lessons-at-Sunday-11:59': {
+    'organize-done-lessons-at-Sunday-23:59': {
         'task': 'app.tasks.organize_done_lessons',
         'schedule': crontab(day_of_week='sunday', hour=23, minute=30),
+    }, 
+
+    'delete-inactive-teaching-rooms-at-23:59-every-day': {
+        'task': 'app.tasks.delete_inactive_teaching_rooms',
+        'schedule': crontab(hour=23, minute=30),
     },
 
     'send-best-message': {
