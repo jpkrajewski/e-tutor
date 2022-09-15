@@ -201,12 +201,11 @@ def facebook_messenger_webhook(request):
     Soon it will
     """
 
+    if request.method == 'GET':
+        return FacebookMessengerAPI.validate_webhook(request)
 
-    # if request.method == 'GET':
-    #     return FacebookMessengerAPI.validate_webhook(request)
-
-    # if request.method == 'POST':
-    #     return FacebookMessengerAPI.handle_post_request(request)
+    if request.method == 'POST':
+       return FacebookMessengerAPI.handle_post_request(request)
 
 
 def lesson_room(request, room_code):
