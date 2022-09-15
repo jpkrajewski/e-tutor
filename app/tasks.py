@@ -57,7 +57,11 @@ def organize_done_lessons(self):
     Organize done lessons:
     
     1. Delete non repetitive lessons
-    2. Update repetitive lessons for next week
+    2. Delete treaching rooms 
+    3. Update repetitive lessons for next week
+
+
+    Too much for 1 function and teaching rooms stay for a week in a bad curcomstances
     """
     done_lessons = Lesson.objects.get_done_lessons()
 

@@ -16,7 +16,7 @@ from .forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
 
 from .utils import FacebookMessengerAPI, ReminderFacebookWrapper
 from .reports import get_money_per_week, get_students_missing_payments, get_total_student_missing_payment, get_lessons_today_and_tomorrow
-from .calendar import order_lessons_from_this_week_by_days_and_hours, order_lessons_from_next_week_by_days_and_hours
+from .calendar import get_lessons_to_display
 from .library.etl_csv import etl_student_csv
 
 def home(request):
@@ -195,8 +195,8 @@ class LessonListView(ListView):
         object_list = object_list if object_list else self.object_list
         return super(LessonListView, self).get_context_data(
             object_list=object_list,
-            lessons_this_week=order_lessons_from_this_week_by_days_and_hours(object_list),
-            lessons_next_week=order_lessons_from_next_week_by_days_and_hours(object_list,)
+            lessons_this_week=get_lessons_to_display(object_list, week='current'),
+            lessons_next_week=get_lessons_to_display(object_list, week='next'),
         )
 
 
