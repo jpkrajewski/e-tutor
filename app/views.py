@@ -1,3 +1,4 @@
+from http.client import HTTPResponse
 from typing import Any, Dict
 from django.urls import reverse
 from django.shortcuts import render, redirect
@@ -8,11 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
+from django.http import JsonResponse
 
 from .models import Lesson, Payment, Student, Tutor, TeachingRoom
 from .forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
 
-from .utils import FacebookMessengerAPI
+from .utils import FacebookMessengerAPI, ReminderFacebookWrapper
 from .reports import get_money_per_week, get_students_missing_payments, get_total_student_missing_payment, get_lessons_today_and_tomorrow
 from .calendar import order_lessons_from_this_week_by_days_and_hours, order_lessons_from_next_week_by_days_and_hours
 from .library.etl_csv import etl_student_csv
@@ -20,6 +22,12 @@ from .library.etl_csv import etl_student_csv
 def home(request):
     return render(request, 'home.html')
 
+
+@login_required
+def testview(request):
+    fb_wrapper = ReminderFacebookWrapper(request.user.tutor.facebook_psid, 'content')
+    response = FacebookMessengerAPI.call_send(fb_wrapper.get_message())
+    return JsonResponse(response)
 
 @login_required
 def change_payment_status(request):
@@ -97,7 +105,7 @@ class StudentDeleteView(DeleteView):
     success_url = '/students'
     template_name = 'student_confirm_delete.html'
 
-
+@method_decorator(login_required, name='dispatch')
 class StudentCreateFromCSVView(View):
     form_class = StudentCreateFromCSVForm
     template_name = 'student_create_from_csv_form.html'
