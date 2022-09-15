@@ -16,7 +16,7 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.conf.beat_schedule = {
     'send-lesson-reminders-every-15-minutes': {
         'task': 'app.tasks.send_lesson_reminders',
-        'schedule': crontab(minute='*/15'),
+        'schedule': crontab(minute='*/10'),
     },
 
     'organize-done-lessons-at-Sunday-11:59': {

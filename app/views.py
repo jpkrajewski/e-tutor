@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
@@ -26,7 +26,6 @@ def change_payment_status(request):
     payment = Payment.objects.get(pk=int(request.POST.get('id_payment')))
     payment.change_status_to_paid()
     payment.save()
-
     return redirect(request.POST.get('redirect_back_path'))
 
 
@@ -73,6 +72,32 @@ class StudentCreateView(CreateView):
         return kwargs
 
 
+@method_decorator(login_required, name='dispatch')
+class StudentUpdateView(UpdateView):
+    model = Student
+    template_name = 'student_create_form.html'
+    form_class = StudentCreateForm
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.tutor = self.request.user.tutor
+        self.object.save()
+        return redirect(self.get_success_url())
+
+    def get_form_kwargs(self, *args, **kwargs):
+        kwargs = super(StudentUpdateView, self).get_form_kwargs(
+            *args, **kwargs)
+        kwargs['tutor'] = self.request.user.tutor
+        return kwargs
+
+
+@method_decorator(login_required, name='dispatch')
+class StudentDeleteView(DeleteView):
+    model = Student
+    success_url = '/students'
+    template_name = 'student_confirm_delete.html'
+
+
 class StudentCreateFromCSVView(View):
     form_class = StudentCreateFromCSVForm
     template_name = 'student_create_from_csv_form.html'
@@ -85,12 +110,10 @@ class StudentCreateFromCSVView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
-
-            # TODO feedback
             feedback = etl_student_csv.etl(request.FILES['csv_with_students'], request.user.tutor)
-            
-            return redirect('students')
-
+            print(feedback)
+            return render(request, self.template_name, {'form': self.form_class(), 'feedback': feedback})
+        
         return render(request, self.template_name, {'form': form})
 
 

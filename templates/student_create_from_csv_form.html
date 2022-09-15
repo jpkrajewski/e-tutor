@@ -9,6 +9,11 @@
                 <h1>Create new students from CSV</h1>
               </div>
               <div class="card-body">
+                {% for msg in feedback %}
+                <div class="alert alert-{{msg.type}}" role="alert">
+                  {{msg.info}}
+                </div>
+                {% endfor %}
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                         {{form.as_p}}

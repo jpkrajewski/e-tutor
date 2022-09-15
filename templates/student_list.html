@@ -15,7 +15,8 @@
                             <tr>
                                 <td>{{ student }}</td>
                                 <td><a href="{{ student.get_absolute_url }}">Show</a></td>
-                                <td><a href="{{ student.get_absolute_url }}">Edit</a></td>
+                                <td><a href="{% url 'students-edit' student.id %}">Edit</a></td>
+                                <td><a href="{% url 'students-delete' student.id %}">Delete</a></td>
                             </tr>
                             {% empty %}
                             <tr>

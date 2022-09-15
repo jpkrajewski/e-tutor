@@ -16,6 +16,10 @@ urlpatterns = [
 
     path('students/create/', views.StudentCreateView.as_view(),
          name='students-create'),
+     path('students/<int:pk>/delete/', views.StudentDeleteView.as_view(),
+          name='students-delete'),
+     path('students/<int:pk>/edit', views.StudentUpdateView.as_view(),
+          name='students-edit'),
      path('students/create-from-csv/', views.StudentCreateFromCSVView.as_view(),
      name='student-create-from-csv'),
     path('students/<int:pk>', views.StudentDetailView.as_view(),

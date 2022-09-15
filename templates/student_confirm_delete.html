@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-4">
+        <div class="col-8">
+            <div class="card">
+              <div class="card-header">
+                <h1>Delete {{ object }} from database?</h1>
+              </div>
+              <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger" value="Delete">
+                </form>
+                <a href="{% url 'students' %}"><button class="btn btn-primary mt-3">Cancel</button></a>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
