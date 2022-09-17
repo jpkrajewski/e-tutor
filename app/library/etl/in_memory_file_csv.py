@@ -62,7 +62,7 @@ class InMemoryFileCSVHandler:
             if self._uploader:
                 mapped_obj[self._uploader._meta.model_name] = self._uploader
             added_obj = self._model.objects.create(**mapped_obj)
-            self._log.append({'status': 'success', 'msg': self._msg_success.format(self._model(**mapped_obj))})
+            self._log.append({'status': 'success', 'msg': self._msg_success.format(added_obj)})
     
     
 

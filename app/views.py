@@ -155,6 +155,9 @@ class StudentListView(ListView):
     model = Student
     template_name = 'student_list.html'
 
+    def get_queryset(self):
+        return Student.objects.filter(tutor=self.request.user.tutor)
+
 
 @method_decorator(login_required, name='dispatch')
 class LessonCreateView(CreateView):
@@ -201,6 +204,9 @@ class LessonDetailView(DetailView):
 class LessonListView(ListView):
     model = Lesson
     template_name = 'lesson_list.html'
+
+    def get_queryset(self):
+        return Lesson.objects.filter(tutor=self.request.user.tutor)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         object_list = object_list if object_list else self.object_list
