@@ -27,6 +27,10 @@
       <li class="nav-item">
         <a class="nav-link" href="/logout" >Logout</a>
       </li>
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'login' %}">Login</a>
+      </li>
       {% endif %}
       <li class="nav-item">
         <a class="nav-link" href="/lesson/demo" >Lesson room demo</a>

@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.contrib.auth import logout
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -17,10 +18,15 @@ from .forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
 from .utils import FacebookMessengerAPI, ReminderFacebookWrapper
 from .reports import get_money_per_week, get_students_missing_payments, get_total_student_missing_payment, get_lessons_today_and_tomorrow
 from .calendar import get_lessons_to_display
-from .library.etl_csv import etl_student_csv
+from .library.etl.in_memory_file_csv import InMemoryStudentCSVHandler
 
 def home(request):
     return render(request, 'home.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect(reverse('home'))
 
 
 @login_required
@@ -118,9 +124,14 @@ class StudentCreateFromCSVView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
-            feedback = etl_student_csv.etl(request.FILES['csv_with_students'], request.user.tutor)
-            print(feedback)
-            return render(request, self.template_name, {'form': self.form_class(), 'feedback': feedback})
+            handler = InMemoryStudentCSVHandler(csv_file=request.FILES['csv_with_students'], 
+                                                model_in_csv=Student, 
+                                                uploader_model=request.user.tutor,
+                                                msg_fail='{} already exists in data base.',
+                                                msg_success='{} added to database successfully.')
+            handler.etl()
+            log = handler.log
+            return render(request, self.template_name, {'form': self.form_class(), 'log': log})
         
         return render(request, self.template_name, {'form': form})
 

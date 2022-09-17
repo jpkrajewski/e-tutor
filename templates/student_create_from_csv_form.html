@@ -9,10 +9,14 @@
                 <h1>Create new students from CSV</h1>
               </div>
               <div class="card-body">
-                {% for msg in feedback %}
-                <div class="alert alert-{{msg.type}}" role="alert">
-                  {{msg.info}}
-                </div>
+                {% for msg in log %}
+                {% if  msg.status == 'fail' %}
+                  <div class="alert alert-danger" role="alert">
+                {% else %}
+                  <div class="alert alert-success" role="alert">
+                {% endif %}
+                  {{msg.msg}}
+                  </div>
                 {% endfor %}
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}

@@ -75,7 +75,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'etutor.wsgi.application'
 ASGI_APPLICATION = 'etutor.asgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

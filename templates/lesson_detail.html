@@ -38,6 +38,11 @@
                       </tbody>
                     </table>
                     </li>
+                    {% if lesson.teachingroom %}
+                    <li class="list-group-item">
+                      Teaching room link: <a href="{{ lesson.teachingroom.url }}">Click</a>
+                    </li>
+                    {% endif %}
                     <li class="list-group-item">
                         Description: {{ lesson.description }}
                     </li>
