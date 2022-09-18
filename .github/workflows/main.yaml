@@ -38,7 +38,7 @@ jobs:
       - name: Run tests
         env:
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          CSRF_TRUSTED_ORIGINS: ${{ secrets.CSRF_TRUSTED_ORIGINS }}
+          CSRF_TRUSTED_ORIGINS: [https://127.0.0.1:8000, https://127.0.0.1:8000]
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
           FACEBOOK_PAGE_VERIFY_TOKEN: ${{ secrets.FACEBOOK_PAGE_VERIFY_TOKEN }}
           REDIS_URL: ${{ secrets.REDIS_URL }}
