@@ -1,5 +1,4 @@
-from http.client import HTTPResponse
-from typing import Any, Dict
+from urllib import request
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
@@ -11,6 +10,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.http import JsonResponse
+from django.forms.models import modelform_factory
 
 from .models import Lesson, Payment, Student, Tutor, TeachingRoom
 from .forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
@@ -72,6 +72,9 @@ class TutorReminderUpdateView(UpdateView):
 class StudentCreateView(CreateView):
     template_name = 'student_create_form.html'
     form_class = StudentCreateForm
+
+    def get_queryset(self):
+        return super().get_queryset().filter(tutor=request.user.tutor)
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -156,7 +159,7 @@ class StudentListView(ListView):
     template_name = 'student_list.html'
 
     def get_queryset(self):
-        return Student.objects.filter(tutor=self.request.user.tutor)
+        return super().get_queryset().filter(tutor=self.request.user.tutor)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -173,6 +176,7 @@ class LessonCreateView(CreateView):
     def get_form_kwargs(self, *args, **kwargs):
         kwargs = super(LessonCreateView, self).get_form_kwargs(*args, **kwargs)
         kwargs['tutor'] = self.request.user.tutor
+        kwargs['student'] = Student.objects.filter(tutor=self.request.user.tutor)
         return kwargs
 
 
@@ -181,6 +185,9 @@ class LessonUpdateView(UpdateView):
     template_name = 'lesson_create_form.html'
     form_class = LessonCreateForm
     model = Lesson
+
+    def get_queryset(self):
+        return super().get_queryset().filter(tutor=request.user.tutor)
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -206,7 +213,7 @@ class LessonListView(ListView):
     template_name = 'lesson_list.html'
 
     def get_queryset(self):
-        return Lesson.objects.filter(tutor=self.request.user.tutor)
+        return super().get_queryset().filter(tutor=self.request.user.tutor)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         object_list = object_list if object_list else self.object_list

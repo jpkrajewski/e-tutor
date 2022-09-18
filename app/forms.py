@@ -40,7 +40,6 @@ class LessonCreateForm(forms.ModelForm):
     class Meta:
         model = Lesson
         exclude = ('tutor', 'is_notification_send', )
-
         widgets = {
             'start_datetime': DateTimeInput(format='%d/%m/%Y %H:%M:%S', attrs={'type': 'datetime-local'}),
             'end_datetime': DateTimeInput(format='%d/%m/%Y %H:%M:%S', attrs={'type': 'datetime-local'}),
@@ -48,8 +47,15 @@ class LessonCreateForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        """
+        super() pops all kwargs, that's why you have to pop
+        your custom kwargs before super().__init__()
+        """
+        
         self.tutor = kwargs.pop('tutor')
+        student = kwargs.pop('student')
         super(LessonCreateForm, self).__init__(*args, **kwargs)
+        self.fields['student'].queryset = student
 
     def clean(self):
         cleaned_data = super(LessonCreateForm, self).clean()
