@@ -1,5 +1,7 @@
+from audioop import reverse
 from datetime import datetime, timedelta, tzinfo
 from operator import le
+from urllib import response
 
 from django.utils import timezone
 from django.test import TestCase, SimpleTestCase
@@ -68,3 +70,4 @@ class TasksLessonsTest(TestCase):
         log = set_repetitive_lessons_to_next_week()
         self.assertEqual(Lesson.objects.filter(start_datetime=yesterday + timedelta(days=7)).first(), lesson)
         self.assertEqual(log, 'Lesson with id: 1 has been updated.')
+        
