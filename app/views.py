@@ -16,7 +16,8 @@ from .models import Lesson, Payment, Student, Tutor, TeachingRoom
 from .forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
 
 from .utils import FacebookMessengerAPI, ReminderFacebookWrapper
-from .reports import get_money_per_week, get_students_missing_payments, get_total_student_missing_payment, get_lessons_today_and_tomorrow
+from .reports import (get_money_per_week, get_students_missing_payments, get_total_student_missing_payment, 
+                        get_lessons_today_and_tomorrow, get_student_missing_payment)
 from .calendar import get_lessons_to_display
 from .library.etl.in_memory_file_csv import InMemoryStudentCSVHandler
 
@@ -147,7 +148,7 @@ class StudentDetailView(DetailView):
     def get_context_data(self, **kwargs):
         return super().get_context_data(
             lessons=self.object.lesson_set.all(),
-            payments=self.object.payment_set.all(),
+            payments=get_student_missing_payment(self.object.payment_set.all()),
             total_missing_payment=get_total_student_missing_payment(
                 self.object.payment_set),
         )

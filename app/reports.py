@@ -11,10 +11,14 @@ def get_students_missing_payments(queryset):
     """
     return (queryset
             .filter(payment__status=Payment.DUE)
-            .annotate(missing_payment=Sum('payment__amount'))
-            .values('id', 'first_name', 'last_name', 'missing_payment')
+            .annotate(missing_payment=Sum('amount'))
+            .values('first_name', 'last_name', 'missing_payment')
             .exclude(missing_payment=None))
 
+def get_student_missing_payment(queryset):
+    return (queryset
+            .filter(status=Payment.DUE)
+            .annotate(missing_payment=Sum('amount')))
 
 def get_total_student_missing_payment(queryset) -> int:
     """
