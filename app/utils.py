@@ -121,7 +121,7 @@ class Reminder:
         )
 
         if lesson.place == Lesson.ONLINE:
-            self._message += f'\n\nLink do zajęć online: {settings.LESSON_URL}{lesson.teachingroom.get_absolute_url()}'
+            self._message += f'\n\nLink do zajęć online: {lesson.teachingroom.get_absolute_url()}'
 
     def get_content(self):
         return self._message

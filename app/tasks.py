@@ -1,6 +1,8 @@
 from celery import shared_task
 from secrets import token_urlsafe
 
+from django.conf import settings
+
 from .utils import FacebookMessengerAPI, Reminder, ReminderFacebookWrapper
 from .models import Lesson, TeachingRoom, Payment, Tutor
 from datetime import timedelta, datetime
@@ -8,46 +10,34 @@ from datetime import timedelta, datetime
 
 @shared_task(bind=True)
 def check_ready_lessons_create_lesson_rooms_send_reminders_create_payments(self):
-
     lessons = Lesson.objects.get_lessons_for_reminders()
-
     if not lessons:
         return 'No reminders to send'
-
     facebook_reminders = []
     # mail_reminders = []
     # sms_reminders = []
-
     for lesson in lessons:
         if lesson.place == Lesson.ONLINE:
             TeachingRoom(lesson=lesson, url=token_urlsafe(16)).save()
-
         reminder = Reminder(lesson.tutor.message_template_to_tutor, lesson).get_content()
-
         # facebook sending
         if lesson.send_facebook_message:
             facebook_reminders.append(ReminderFacebookWrapper(lesson.tutor.int_facebook_psid, reminder).get_message())
-
         # sms sending
         ...
         # mail sending
         ...
-
         # create missing payment record to track cash flow
         lp = Payment(student=lesson.student, lesson_date=lesson.start_datetime, amount=lesson.amount)
         lp.save()
-
         lesson.is_notification_send = True
         lesson.save()
-
     for facebook_reminder in facebook_reminders:
         FacebookMessengerAPI.call_send(facebook_reminder)
-
     # for mail_reminder in mail_reminders:
     ...
     # for sms_reminder in sms_reminders:
     ...
-
     return 'Reminders send'
 
 
@@ -57,21 +47,17 @@ def set_repetitive_lessons_to_next_week(self):
     Organize done lessons:
     
     1. Delete non repetitive lessons
-    2. Delete treaching rooms 
     3. Update repetitive lessons for next week
 
 
     Too much for 1 function and teaching rooms stay for a week in a bad curcomstances
     """
     done_lessons = Lesson.objects.get_done_lessons()
-
     if not done_lessons:
         return 'No lessons were updated'
 
     log = []
-
     for lesson in done_lessons:
-
         if lesson.is_repetitive is False:
             log.append(f'Lesson with id: {lesson.id} has been deleted.')
             lesson.delete()
@@ -98,7 +84,6 @@ def delete_inactive_teaching_rooms(self):
     
     return 'Inactive rooms deleted'
     
-
 
 @shared_task(bind=True)
 def send_alpha_message(self):

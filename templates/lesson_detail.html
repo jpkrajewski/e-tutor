@@ -40,7 +40,7 @@
                     </li>
                     {% if lesson.teachingroom %}
                     <li class="list-group-item">
-                      Teaching room link: <a href="{{ lesson.teachingroom.url }}">Click</a>
+                      Teaching room link: <a href="{{ lesson.teachingroom.get_absolute_url }}">Click</a>
                     </li>
                     {% endif %}
                     <li class="list-group-item">

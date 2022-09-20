@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-
+from django.conf import settings
 
 class Tutor(models.Model):
 
@@ -167,5 +167,6 @@ class TeachingRoom(models.Model):
     def __str__(self):
         return self.lesson.student.first_name
 
+
     def get_absolute_url(self):
-        return reverse('teaching-room', args=[self.url])
+        return f"{settings.LESSON_URL}{reverse('teaching-room', args=[self.url])}"
