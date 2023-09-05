@@ -3,8 +3,8 @@ from secrets import token_urlsafe
 
 from django.conf import settings
 
-from .utils import FacebookMessengerAPI, Reminder, ReminderFacebookWrapper
-from .models import Lesson, TeachingRoom, Payment, Tutor
+from app.utils import FacebookMessengerAPI, Reminder, ReminderFacebookWrapper
+from app.models import Lesson, TeachingRoom, Payment, Tutor
 from datetime import timedelta, datetime
 
 

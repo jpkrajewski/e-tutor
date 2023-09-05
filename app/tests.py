@@ -8,9 +8,9 @@ from django.test import TestCase, SimpleTestCase
 from django.conf import settings
 from django.contrib.auth.models import User
 
-from .models import TeachingRoom, Tutor, Student, Lesson
-from .tasks import set_repetitive_lessons_to_next_week, delete_inactive_teaching_rooms
-from .utils import FacebookMessengerAPI, ReminderFacebookWrapper, Reminder
+from app.models import TeachingRoom, Tutor, Student, Lesson
+from app.tasks import set_repetitive_lessons_to_next_week, delete_inactive_teaching_rooms
+from app.utils import FacebookMessengerAPI, ReminderFacebookWrapper, Reminder
 
 
 class DebugTest(SimpleTestCase):

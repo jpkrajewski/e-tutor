@@ -1,10 +1,9 @@
 from datetime import datetime
-from typing import Any, Dict, Optional
 
 from django import forms
 from django.utils import timezone
 from django.forms import DateTimeInput, Textarea
-from .models import Student, Lesson, Tutor
+from app.models import Student, Lesson
 
 
 class StudentCreateForm(forms.ModelForm):

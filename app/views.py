@@ -2,6 +2,7 @@ from urllib import request
 from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.decorators import method_decorator
 from django.contrib.auth import logout
 from django.views import View
@@ -10,42 +11,20 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 from django.http import JsonResponse
-from django.forms.models import modelform_factory
 
-from .models import Lesson, Payment, Student, Tutor, TeachingRoom
-from .forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
-
-from .utils import FacebookMessengerAPI, ReminderFacebookWrapper
-from .reports import (get_money_per_week, get_students_missing_payments, get_total_student_missing_payment, 
-                        get_lessons_today_and_tomorrow, get_student_missing_payment)
-from .calendar import get_lessons_to_display
-from .library.etl.in_memory_file_csv import InMemoryStudentCSVHandler
-
-def home(request):
-    return render(request, 'home.html')
+from app.models import Lesson, Payment, Student, Tutor, TeachingRoom
+from app.forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
+from app.utils import FacebookMessengerAPI, ReminderFacebookWrapper
+from app.reports import (
+    get_money_per_week, 
+    get_students_missing_payments, get_total_student_missing_payment, 
+    get_lessons_today_and_tomorrow, get_student_missing_payment
+)
+from app.calendar import get_lessons_to_display
+from app.library.etl.in_memory_file_csv import InMemoryStudentCSVHandler
 
 
-def logout_view(request):
-    logout(request)
-    return redirect(reverse('home'))
-
-
-@login_required
-def testview(request):
-    fb_wrapper = ReminderFacebookWrapper(request.user.tutor.facebook_psid, 'content')
-    response = FacebookMessengerAPI.call_send(fb_wrapper.get_message())
-    return JsonResponse(response)
-
-@login_required
-def change_payment_status(request):
-    payment = Payment.objects.get(pk=int(request.POST.get('id_payment')))
-    payment.change_status_to_paid()
-    payment.save()
-    return redirect(request.POST.get('redirect_back_path'))
-
-
-@method_decorator(login_required, name='dispatch')
-class TutorProfileView(View):
+class TutorProfileView(LoginRequiredMixin, View):
     template_name = 'profile.html'
 
     def get(self, request):
@@ -58,8 +37,7 @@ class TutorProfileView(View):
         return render(request, self.template_name, context)
 
 
-@method_decorator(login_required, name='dispatch')
-class TutorReminderUpdateView(UpdateView):
+class TutorReminderUpdateView(LoginRequiredMixin, UpdateView):
     model = Tutor
     template_name = 'reminder.html'
     fields = ['send_reminder_hours_before',
@@ -69,8 +47,7 @@ class TutorReminderUpdateView(UpdateView):
               'message_template_to_students']
 
 
-@method_decorator(login_required, name='dispatch')
-class StudentCreateView(CreateView):
+class StudentCreateView(LoginRequiredMixin, CreateView):
     template_name = 'student_create_form.html'
     form_class = StudentCreateForm
 
@@ -90,8 +67,7 @@ class StudentCreateView(CreateView):
         return kwargs
 
 
-@method_decorator(login_required, name='dispatch')
-class StudentUpdateView(UpdateView):
+class StudentUpdateView(LoginRequiredMixin, UpdateView):
     model = Student
     template_name = 'student_create_form.html'
     form_class = StudentCreateForm
@@ -109,14 +85,13 @@ class StudentUpdateView(UpdateView):
         return kwargs
 
 
-@method_decorator(login_required, name='dispatch')
-class StudentDeleteView(DeleteView):
+class StudentDeleteView(LoginRequiredMixin, DeleteView):
     model = Student
     success_url = '/students'
     template_name = 'student_confirm_delete.html'
 
-@method_decorator(login_required, name='dispatch')
-class StudentCreateFromCSVView(View):
+
+class StudentCreateFromCSVView(LoginRequiredMixin, View):
     form_class = StudentCreateFromCSVForm
     template_name = 'student_create_from_csv_form.html'
 
@@ -140,8 +115,7 @@ class StudentCreateFromCSVView(View):
         return render(request, self.template_name, {'form': form})
 
 
-@method_decorator(login_required, name='dispatch')
-class StudentDetailView(DetailView):
+class StudentDetailView(LoginRequiredMixin, DetailView):
     model = Student
     template_name = 'student_detail.html'
 
@@ -154,8 +128,7 @@ class StudentDetailView(DetailView):
         )
 
 
-@method_decorator(login_required, name='dispatch')
-class StudentListView(ListView):
+class StudentListView(LoginRequiredMixin, ListView):
     model = Student
     template_name = 'student_list.html'
 
@@ -163,8 +136,7 @@ class StudentListView(ListView):
         return super().get_queryset().filter(tutor=self.request.user.tutor)
 
 
-@method_decorator(login_required, name='dispatch')
-class LessonCreateView(CreateView):
+class LessonCreateView(LoginRequiredMixin, CreateView):
     template_name = 'lesson_create_form.html'
     form_class = LessonCreateForm
 
@@ -181,8 +153,7 @@ class LessonCreateView(CreateView):
         return kwargs
 
 
-@method_decorator(login_required, name='dispatch')
-class LessonUpdateView(UpdateView):
+class LessonUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'lesson_create_form.html'
     form_class = LessonCreateForm
     model = Lesson
@@ -202,14 +173,12 @@ class LessonUpdateView(UpdateView):
         return kwargs
 
 
-@method_decorator(login_required, name='dispatch')
-class LessonDetailView(DetailView):
+class LessonDetailView(LoginRequiredMixin, DetailView):
     model = Lesson
     template_name = 'lesson_detail.html'
 
 
-@method_decorator(login_required, name='dispatch')
-class LessonListView(ListView):
+class LessonListView(LoginRequiredMixin, ListView):
     model = Lesson
     template_name = 'lesson_list.html'
 
@@ -239,6 +208,19 @@ def facebook_messenger_webhook(request):
 
     if request.method == 'POST':
        return FacebookMessengerAPI.handle_post_request(request)
+    
+
+def logout_view(request):
+    logout(request)
+    return redirect(reverse('home'))
+
+
+@login_required
+def change_payment_status(request):
+    payment = Payment.objects.get(pk=int(request.POST.get('id_payment')))
+    payment.change_status_to_paid()
+    payment.save()
+    return redirect(request.POST.get('redirect_back_path'))
 
 
 def lesson_room(request, room_code):

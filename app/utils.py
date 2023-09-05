@@ -1,7 +1,7 @@
 import requests
 from django.conf import settings
 from django.http import HttpResponse
-from .models import Lesson
+from app.models import Lesson
 import json
 from datetime import datetime, timedelta
 from django.conf import settings
