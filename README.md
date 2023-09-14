@@ -1,5 +1,7 @@
 # Tutoring App: ETutor
 
+Scroll down for Screenshots!
+
 ## Description
 This is a tutoring app that allows tutors to add their students to the system, create lessons, send reminder through email. The app has also calendar and tracks payments for the tutor. The interactive whiteboard with private lessons room is included. 
 
