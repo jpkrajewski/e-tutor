@@ -1,11 +1,17 @@
 from app.models import Lesson
+from app.constants.templates import (
+    LESSON_REMIDER_TO_TUTOR_EMAIL_HTML,
+    LESSON_REMIDER_TO_TUTOR_EMAIL_TEXT,
+    LESSON_REMIDER_TO_STUDENT_EMAIL_HTML,
+    LESSON_REMIDER_TO_STUDENT_EMAIL_TEXT
+)
 
 from botocore.exceptions import ClientError
 
 
-class Reminder:
-    def __init__(self, template: str, lesson: Lesson):
-        self._message = template.format(
+class TemplatePopulator:
+    def __init__(self, lesson: Lesson):
+        self._data = dict(
             start=lesson.start_datetime.astimezone().strftime("%m/%d/%Y, %H:%M"),
             end=lesson.end_datetime.astimezone().strftime("%m/%d/%Y, %H:%M"),
             sfname=lesson.student.first_name,
@@ -15,14 +21,20 @@ class Reminder:
             subject=lesson.subject,
             address=lesson.student.address,
         )
-
         if lesson.place == Lesson.ONLINE:
-            self._message += (
-                f"\n\nLink do zajęć online: {lesson.teachingroom.get_absolute_url()}"
-            )
+            self._data["link"] = lesson.teachingroom.get_absolute_url()
 
-    def get_content(self):
-        return self._message
+    def get_email_to_tutor(self):
+        return LESSON_REMIDER_TO_TUTOR_EMAIL_HTML.format(**self._data), LESSON_REMIDER_TO_TUTOR_EMAIL_TEXT.format(**self._data)
+    
+    def get_email_to_student(self):
+        return LESSON_REMIDER_TO_STUDENT_EMAIL_HTML.format(**self._data), LESSON_REMIDER_TO_STUDENT_EMAIL_TEXT.format(**self._data)
+    
+    def get_sms_to_tutor(self):
+        raise NotImplementedError
+
+    def get_sms_to_student(self):
+        raise NotImplementedError
 
 
 class SesMailSender:
@@ -55,8 +67,6 @@ class SesMailSender:
             'Message': {
                 'Subject': {'Data': subject},
                 'Body': {'Text': {'Data': text}, 'Html': {'Data': html}}}}
-        if reply_tos is not None:
-            send_args['ReplyToAddresses'] = reply_tos
         try:
             response = self.ses_client.send_email(**send_args)
             message_id = response['MessageId']

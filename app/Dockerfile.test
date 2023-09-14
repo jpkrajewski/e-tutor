@@ -1,7 +1,7 @@
-
 FROM python:3.8   
  
-ENV APP=/home/app/etutor  
+ENV APP=/home/app/etutor
+ENV TEST_DATABASE=sqlite3  
  
 RUN mkdir -p $APP  
 
@@ -16,4 +16,4 @@ COPY . $APP
   
 RUN pip install -r requirements.txt  
 
-CMD $APP/startup.sh  
+CMD python manage.py test

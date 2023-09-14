@@ -68,15 +68,27 @@ TEMPLATES = [
 WSGI_APPLICATION = "etutor.wsgi.application"
 ASGI_APPLICATION = "etutor.asgi.application"
 
-DATABASES = {
-    "default": {
+DATABASES_AVAILABLE = {
+    "sqlite3": {
+        "ENGINE": "django.db.backends.sqlite3",
+        'NAME': 'sqlite3.db',            # Or path to database file if using sqlite3.
+        'USER': '',                      # Not used with sqlite3.
+        'PASSWORD': '',                  # Not used with sqlite3.
+        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+    },
+    "postgresql": {
         "ENGINE": os.environ.get("DB_ENGINE"),
         "HOST": os.environ.get("DB_HOST"),
         "USER": os.environ.get("POSTGRES_USER"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
         "NAME": os.environ.get("POSTGRES_DB"),
         "PORT": os.environ.get("POSTGRES_PORT"),
-    }
+    },
+}
+
+DATABASES = {
+    "default": DATABASES_AVAILABLE[os.environ.get("TEST_DATABASE", "postgresql")],
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -126,3 +138,8 @@ CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TIMEZONE = "Europe/Warsaw"
+
+AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME")
+AWS_SES_ACCESS_KEY_ID = os.environ.get("AWS_SES_ACCESS_KEY_ID")
+AWS_SES_SECRET_ACCESS_KEY = os.environ.get("AWS_SES_SECRET_ACCESS_KEY")
+AWS_SES_SOURCE_EMAIL = os.environ.get("AWS_SES_SOURCE_EMAIL")

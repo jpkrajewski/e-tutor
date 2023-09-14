@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   web:
-    build: etutor_django
+    build: app
     ports:
       - ${DJANGO_PORT}:${DJANGO_PORT}
     environment:
@@ -27,7 +27,7 @@ services:
     env_file: .env
   celery:
     restart: always
-    build: etutor_django
+    build: app
     command: celery -A etutor worker -l info
     volumes:
       - ./app:/app

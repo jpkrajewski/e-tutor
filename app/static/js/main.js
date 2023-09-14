@@ -10,11 +10,9 @@ let x = "black",
 
 const userFirstName = JSON.parse(document.getElementById('userFirstName').textContent)
 const username = userFirstName == 'student' ? userFirstName + Math.ceil(Math.random() * 10000) : userFirstName
-
 const messageList = document.getElementById('message-list');
 const sendMessageButton = document.getElementById('btn-send-msg');
 const messageInputBox = document.getElementById('msg');
-
 
 sendMessageButton.addEventListener('click', () => {
     let message = messageInputBox.value;
@@ -40,7 +38,6 @@ messageInputBox.onkeypress = (event) => {
     sendMessageButton.click()
   }
 }
-
 
 function init() {
     canvas = document.getElementById('can');
@@ -91,7 +88,6 @@ function color(obj) {
     }
     if (x == "white") y = 30;
     else y = 2;
-
 }
 
 function draw() {
@@ -126,7 +122,6 @@ function findxy(res, e) {
         prevY = currY;
         currX = e.clientX - canvas.getBoundingClientRect().left;
         currY = e.clientY - canvas.getBoundingClientRect().top;
-
         flag = true;
         dot_flag = true;
         if (dot_flag) {
@@ -177,14 +172,11 @@ lessonSocket.onerror = event => {
 }
 
 lessonSocket.onmessage = event => {
-    const data = JSON.parse(event.data).message;
-
+    const data = JSON.parse(event.data);
     if (data.username == username) {
         return;
     }
-
     switch(data.type) {
-
         case 'draw':
             drawAction(data);
             break;
@@ -196,14 +188,7 @@ lessonSocket.onmessage = event => {
         case 'connected':
             chatAction(data);
             break;
-
-        default:
-            console.log('default');
-
     }
-
-    console.log(data);
-    console.log(username);
 };
 
 function showChatMessage(chatMessage) {
@@ -214,13 +199,11 @@ function showChatMessage(chatMessage) {
 }
 
 function showChatMessageLink(user, link) {
-
     let a = document.createElement('a');
     let linkText = document.createTextNode(link);
     a.appendChild(linkText);
     a.href = link;
     a.target = "_blank"
-
     let li = document.createElement('li');
     li.appendChild(document.createTextNode(user + ': '));
     li.appendChild(a);
@@ -287,41 +270,6 @@ function sendSignal(action, message, type) {
     lessonSocket.send(jsonString);
 };
 
-let localStream = new MediaStream();
-const constrains = {
-    'video': true,
-    'audio': true,
-}
-
-const localVideo = document.querySelector('#local-video');
-
-let userMedia = navigator.mediaDevices.getUserMedia(constrains)
-    .then(stream => {
-        localStream = stream;
-        localVideo.srcObject = localStream;
-        localVideo.muted = true;
-    })
-    .catch(error => {
-        console.log('Error accessing media devices', error)
-    });
-
-function createOffer(peerUsername, receiverChannelName) {
-    let peer = new RTCPeerConnection(null);
-    addLocalTracks(peer);
-    let dc = peer.createDataChannel('channel');
-    dc.addEventListener('open', () => {
-        console.log()
-    });
-}
-
-function addLocalTracks(peer) {
-    localStream.getTracks().forEach(track => {
-        peer.addTrack(track, localStream)
-    });
-
-    return;
-}
-
 function isValidURL(str) {
   var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
@@ -341,6 +289,5 @@ function saveCanvas() {
     link.click();
     link.delete;
 }
-
 
 init();

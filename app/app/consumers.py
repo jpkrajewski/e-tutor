@@ -7,7 +7,6 @@ class LessonConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_code = self.scope["url_route"]["kwargs"]["room_code"]
         self.room_group_name = "lesson_%s" % self.room_code
-        # Join room group
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
 
@@ -25,5 +24,4 @@ class LessonConsumer(AsyncWebsocketConsumer):
         )
 
     async def room_message(self, event):
-        message = event["message"]
-        await self.send(text_data=json.dumps({"message": message}))
+        await self.send(text_data=json.dumps(event["message"]))

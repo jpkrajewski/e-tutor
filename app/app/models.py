@@ -8,21 +8,6 @@ from django.conf import settings
 
 
 class Tutor(models.Model):
-    TO_TUTOR = """
-    Hej,
-    {subject} z {sfname} {slname}.
-    Lekcje odbywają się: {start}.
-    
-    Miejsce: {place}
-    Adres: {address}
-    
-    Dodatkowy opis: {description}
-    """
-
-    message_template_to_tutor = models.CharField(
-        max_length=500, blank=True, default=TO_TUTOR
-    )
-    message_template_to_student = models.CharField(max_length=500, blank=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
@@ -47,17 +32,6 @@ class Student(models.Model):
         return reverse("student-detail", args=[self.id])
 
 
-class LessonManager(models.Manager):
-    def get_lessons_for_reminders(self):
-        now = datetime.now(tz=timezone.utc)
-        return self.filter(
-            start_datetime__gte=now, start_datetime__lte=now + timedelta(hours=3)
-        ).filter(is_notification_send=False)
-
-    def get_done_lessons(self):
-        return self.filter(end_datetime__lt=datetime.now(tz=timezone.utc))
-
-
 class Payment(models.Model):
     PAID = "paid"
     DUE = "due"
@@ -77,6 +51,17 @@ class Payment(models.Model):
         self.status = self.PAID
 
 
+class LessonManager(models.Manager):
+    def get_lessons_for_reminders(self):
+        now = datetime.now(tz=timezone.utc)
+        return self.filter(
+            start_datetime__gte=now, start_datetime__lte=now + timedelta(hours=3)
+        ).filter(is_notification_send=False)
+
+    def get_done_lessons(self):
+        return self.filter(end_datetime__lt=datetime.now(tz=timezone.utc))
+
+
 class Lesson(models.Model):
     ONLINE = "Online"
     AT_CLIENTS = "Client's"
@@ -86,7 +71,6 @@ class Lesson(models.Model):
         (AT_CLIENTS, gettext_lazy("Client's")),
         (AT_TUTORS, gettext_lazy("Tutor's")),
     ]
-
     subject = models.CharField(max_length=50)
     place = models.CharField(max_length=30, choices=PLACE, default=ONLINE)
     amount = models.PositiveIntegerField(null=False, blank=False)
@@ -107,14 +91,14 @@ class Lesson(models.Model):
     def __str__(self):
         return f'{self.start_datetime.astimezone().strftime("%A, %m/%d/%Y, %H:%M")} {self.student.first_name} {self.student.last_name}'
 
-    def get_lesson_start_and_end_time(self):
+    def get_lesson_start_and_end_time(self) -> str:
         return "{start} - {end}".format(
             start=self.start_datetime.astimezone().strftime("%H:%M"),
             end=self.end_datetime.astimezone().strftime("%H:%M"),
         )
 
     @property
-    def start_date(self):
+    def start_date(self) -> str:
         return self.start_datetime.astimezone().strftime("%A, %d.%m.%Y")
 
     @property
@@ -125,7 +109,7 @@ class Lesson(models.Model):
     def end_hour(self):
         return self.end_datetime.astimezone().strftime("%H:%M")
 
-    def get_absolute_url(self):
+    def get_absolute_url(self) -> str:
         return reverse("lesson-detail", args=[self.id])
 
 
@@ -137,7 +121,6 @@ class TeachingRoomManager(models.Manager):
 class TeachingRoom(models.Model):
     url = models.CharField(max_length=300)
     lesson = models.OneToOneField(Lesson, on_delete=models.CASCADE)
-
     objects = TeachingRoomManager()
 
     def __str__(self):
