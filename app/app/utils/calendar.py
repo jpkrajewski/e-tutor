@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 
 from django.db.models.functions import Extract
 
-
 ISO_WEEK_DAYS = (
     "Monday",
     "Tuesday",

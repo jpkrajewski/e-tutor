@@ -12,18 +12,19 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-TEMPLATES_DIR = BASE_DIR / "templates"
-STATIC_ROOT = BASE_DIR / "staticfiles"
+from environ import Env
 
-DEBUG = os.environ.get("DEBUG")
-SECRET_KEY = os.environ.get("SECRET_KEY")
-ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
-CSRF_TRUSTED_ORIGINS = [os.environ.get("CSRF_TRUSTED_ORIGINS")]
-LESSON_URL = os.environ.get("LESSON_URL")
+BASE_DIR = Path(__file__).resolve().parent.parent
+env = Env()
+env.read_env("/home/jakub/e-tutor/.env.dev")
+
+DEBUG = env("DEBUG", default=False)
+SECRET_KEY = env("DJANGO_SECRET_KEY")
+ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=[])
+CSRF_TRUSTED_ORIGINS = env.list("CRSF_TRUSTED_ORIGINS", default=[])
+LESSON_URL = env("LESSON_URL")
 
 INSTALLED_APPS = [
-    "daphne",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -31,8 +32,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_celery_beat",
-    "app",
     "channels",
+    "app",
 ]
 
 MIDDLEWARE = [
@@ -47,6 +48,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "etutor.urls"
 
+TEMPLATES_DIR = BASE_DIR / "templates"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -68,28 +70,28 @@ TEMPLATES = [
 WSGI_APPLICATION = "etutor.wsgi.application"
 ASGI_APPLICATION = "etutor.asgi.application"
 
-DATABASES_AVAILABLE = {
-    "sqlite3": {
+if env("DEVELOPMENT", default=True):
+    default_database = {
         "ENGINE": "django.db.backends.sqlite3",
-        'NAME': 'sqlite3.db',            # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    },
-    "postgresql": {
-        "ENGINE": os.environ.get("DB_ENGINE"),
-        "HOST": os.environ.get("DB_HOST"),
-        "USER": os.environ.get("POSTGRES_USER"),
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-        "NAME": os.environ.get("POSTGRES_DB"),
-        "PORT": os.environ.get("POSTGRES_PORT"),
-    },
-}
+        "NAME": str(BASE_DIR / "db.sqlite3"),
+    }
+else:
+    POSTGRES_HOST = env("POSTGRES_HOST")
+    POSTGRES_USER = env("POSTGRES_USER")
+    POSTGRES_PASSWORD = env("POSTGRES_PASSWORD")
+    POSTGRES_DB = env("POSTGRES_DB")
+    POSTGRES_PORT = env("POSTGRES_PORT", default="5432")
 
-DATABASES = {
-    "default": DATABASES_AVAILABLE[os.environ.get("TEST_DATABASE", "postgresql")],
-}
+    default_database = {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": POSTGRES_DB,
+        "USER": POSTGRES_USER,
+        "PASSWORD": POSTGRES_PASSWORD,
+        "HOST": POSTGRES_HOST,
+        "PORT": POSTGRES_PORT,
+    }
+
+DATABASES = {"default": default_database}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -110,30 +112,38 @@ LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Europe/Warsaw"
 USE_I18N = True
 USE_TZ = True
+
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
+
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "profile"
 LOGOUT_URL = "logout"
 LOGOUT_REDIRECT_URL = "login"
 
+REDIS_URL = env("REDIS_URL")
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get("REDIS_URL")],
+            "hosts": [REDIS_URL],
         },
     },
 }
 
-CELERY_BROKER_URL = [os.environ.get("REDIS_URL")]
+CELERY_BROKER_URL = [REDIS_URL]
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"

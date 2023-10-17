@@ -1,44 +1,93 @@
 version: '3.8'
-services:
-  web:
-    build: app
-    ports:
-      - ${DJANGO_PORT}:${DJANGO_PORT}
-    environment:
-      - DB_HOST=db
-    depends_on:
-      - db
-      - redis
-    env_file: .env
-  db:
-    image: postgres:alpine
-    restart: always
-    ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
-    volumes:
-      - db:/var/lib/postgresql/data
-    env_file: .env
-  redis:
-    image: redis:alpine
-    ports:
-      - ${REDIS_PORT}:${REDIS_PORT}
-    volumes:
-      - redis:/data
-    env_file: .env
-  celery:
-    restart: always
-    build: app
-    command: celery -A etutor worker -l info
-    volumes:
-      - ./app:/app
-    env_file: .env
-    depends_on:
-      - db
-      - redis
-      - web
 
-volumes:
+x-base: &backend-base
+    build: .
+    env_file:
+      - .env.dev
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./app:/opt/app
+
+x-base-celery: &backend-base-celery
+    build: .
+    env_file:
+      - .env.dev
+    depends_on:
+      - django
+    volumes:
+      - ./app:/opt/app
+
+services:
   db:
-    driver: local
+    container_name: etutor-db
+    env_file:
+      - .env.dev
+    image: postgres:12.5-alpine
+    environment:
+      POSTGRES_HOST: ${POSTGRES_HOST:-db}
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      POSTGRES_DB: ${POSTGRES_DB:-django_db}
+      POSTGRES_USER: ${POSTGRES_USER:-django_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-django_password}
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
   redis:
-    driver: local
+    container_name: etutor-redis
+    image: redis:alpine3.16
+    env_file:
+      - .env.dev
+    ports:
+      - "6379:6379"
+
+  django:
+    <<: *backend-base
+    command:
+    - /bin/bash
+    - -c
+    - |
+      set -e
+      while ! nc -z db 5432; do
+        sleep 0.1
+      done
+      echo "Runserver starting"
+      python manage.py runserver --insecure 0.0.0.0:8000
+    container_name: etutor-django
+    ports:
+      - "8000:8000"
+    image: etutor-django
+    restart: unless-stopped
+
+  migrate:
+    <<: *backend-base
+    depends_on:
+      - django
+    command:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        while ! nc -z db 5432; do
+          sleep 0.1
+        done
+        echo "Running migrations"
+        python manage.py makemigrations app
+        python manage.py migrate
+    container_name: etutor-migrate
+    image: etutor-migrate
+    restart: 'no'
+
+  celery-worker:
+    <<: *backend-base-celery
+    restart: always
+    command: celery -A etutor worker -l info
+    container_name: etutor-celery-worker
+
+  celery-beat:
+    <<: *backend-base-celery
+    restart: always
+    command: celery -A etutor beat -l info
+    container_name: etutor-celery-beat

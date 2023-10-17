@@ -1,13 +1,13 @@
-from celery import shared_task
-from secrets import token_urlsafe
-import boto3
 from datetime import timedelta
+from secrets import token_urlsafe
 
+import boto3
+from celery import shared_task
 from django.conf import settings
+from django.db.models import F
 
-from app.utils import TemplatePopulator, SesMailSender
-from app.models import Lesson, TeachingRoom, Payment
-
+from app.models import Lesson, Payment, TeachingRoom
+from app.utils.ses import SesMailSender, TemplatePopulator
 
 
 @shared_task(bind=True)
@@ -17,10 +17,10 @@ def check_ready_lessons_create_lesson_rooms_send_reminders_create_payments(self)
         return "No reminders to send"
     mail_sender = SesMailSender(
         boto3.client(
-            service_name='ses', 
+            service_name="ses",
             region_name=settings.AWS_SES_REGION_NAME,
             aws_access_key_id=settings.AWS_SES_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SES_SECRET_ACCESS_KEY
+            aws_secret_access_key=settings.AWS_SES_SECRET_ACCESS_KEY,
         )
     )
     for lesson in lessons:
@@ -36,6 +36,8 @@ def check_ready_lessons_create_lesson_rooms_send_reminders_create_payments(self)
                 text=email_text,
                 html=email_html,
             )
+
+            # Email to student
             # email_html, email_text = populator.get_email_to_student()
             # mail_sender.send_email(
             #     source=AWS_SES_SOURCE_EMAIL,
@@ -44,8 +46,10 @@ def check_ready_lessons_create_lesson_rooms_send_reminders_create_payments(self)
             #     text=email_text,
             #     html=email_html,
             # )
+
         if lesson.send_sms:
-            pass
+            pass  # Not implemented
+
         lp = Payment(
             student=lesson.student,
             lesson_date=lesson.start_datetime,
@@ -53,7 +57,7 @@ def check_ready_lessons_create_lesson_rooms_send_reminders_create_payments(self)
         )
         lp.save()
         lesson.is_notification_send = True
-        lesson.save()
+        lesson.save(update_fields=["is_notification_send"])
     return "Reminders send"
 
 
@@ -66,9 +70,11 @@ def set_repetitive_lessons_to_next_week(self):
         if not lesson.is_repetitive:
             lesson.delete()
         lesson.is_notification_send = False
-        lesson.start_datetime += timedelta(days=7)
-        lesson.end_datetime += timedelta(days=7)
-        lesson.save()
+        lesson.start_datetime = F("start_datetime") + timedelta(days=7)
+        lesson.end_datetime = F("end_datetime") + timedelta(days=7)
+        lesson.save(
+            update_fields=["is_notification_send", "start_datetime", "end_datetime"]
+        )
     return "Lessons updated"
 
 

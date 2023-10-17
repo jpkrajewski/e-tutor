@@ -1,25 +1,26 @@
 from urllib import request
-from django.urls import reverse
-from django.shortcuts import render, redirect
+
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import logout
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views import View
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.views.generic.list import ListView
 
-from app.models import Lesson, Payment, Student, Tutor, TeachingRoom
-from app.forms import StudentCreateForm, LessonCreateForm, StudentCreateFromCSVForm
-from app.reports import (
+from app.forms import LessonCreateForm, StudentCreateForm, StudentCreateFromCSVForm
+from app.library.etl.in_memory_file_csv import InMemoryStudentCSVHandler
+from app.models import Lesson, Payment, Student, TeachingRoom, Tutor
+from app.utils.calendar import get_lessons_to_display
+from app.utils.reports import (
+    get_lessons_today_and_tomorrow,
     get_money_per_week,
+    get_student_missing_payment,
     get_students_missing_payments,
     get_total_student_missing_payment,
-    get_lessons_today_and_tomorrow,
-    get_student_missing_payment,
 )
-from app.calendar import get_lessons_to_display
-from app.library.etl.in_memory_file_csv import InMemoryStudentCSVHandler
 
 
 class TutorProfileView(LoginRequiredMixin, View):

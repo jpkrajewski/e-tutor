@@ -1,12 +1,12 @@
-from app.models import Lesson
+from botocore.exceptions import ClientError
+
 from app.constants.templates import (
+    LESSON_REMIDER_TO_STUDENT_EMAIL_HTML,
+    LESSON_REMIDER_TO_STUDENT_EMAIL_TEXT,
     LESSON_REMIDER_TO_TUTOR_EMAIL_HTML,
     LESSON_REMIDER_TO_TUTOR_EMAIL_TEXT,
-    LESSON_REMIDER_TO_STUDENT_EMAIL_HTML,
-    LESSON_REMIDER_TO_STUDENT_EMAIL_TEXT
 )
-
-from botocore.exceptions import ClientError
+from app.models import Lesson
 
 
 class TemplatePopulator:
@@ -25,11 +25,15 @@ class TemplatePopulator:
             self._data["link"] = lesson.teachingroom.get_absolute_url()
 
     def get_email_to_tutor(self):
-        return LESSON_REMIDER_TO_TUTOR_EMAIL_HTML.format(**self._data), LESSON_REMIDER_TO_TUTOR_EMAIL_TEXT.format(**self._data)
-    
+        return LESSON_REMIDER_TO_TUTOR_EMAIL_HTML.format(
+            **self._data
+        ), LESSON_REMIDER_TO_TUTOR_EMAIL_TEXT.format(**self._data)
+
     def get_email_to_student(self):
-        return LESSON_REMIDER_TO_STUDENT_EMAIL_HTML.format(**self._data), LESSON_REMIDER_TO_STUDENT_EMAIL_TEXT.format(**self._data)
-    
+        return LESSON_REMIDER_TO_STUDENT_EMAIL_HTML.format(
+            **self._data
+        ), LESSON_REMIDER_TO_STUDENT_EMAIL_TEXT.format(**self._data)
+
     def get_sms_to_tutor(self):
         raise NotImplementedError
 
@@ -39,6 +43,7 @@ class TemplatePopulator:
 
 class SesMailSender:
     """Encapsulates functions to send emails with Amazon SES."""
+
     def __init__(self, ses_client):
         """
         :param ses_client: A Boto3 Amazon SES client.
@@ -62,14 +67,16 @@ class SesMailSender:
         :return: The ID of the message, assigned by Amazon SES.
         """
         send_args = {
-            'Source': source,
-            'Destination': destination.to_service_format(),
-            'Message': {
-                'Subject': {'Data': subject},
-                'Body': {'Text': {'Data': text}, 'Html': {'Data': html}}}}
+            "Source": source,
+            "Destination": destination.to_service_format(),
+            "Message": {
+                "Subject": {"Data": subject},
+                "Body": {"Text": {"Data": text}, "Html": {"Data": html}},
+            },
+        }
         try:
             response = self.ses_client.send_email(**send_args)
-            message_id = response['MessageId']
+            message_id = response["MessageId"]
         except ClientError:
             raise
         else:

@@ -1,7 +1,8 @@
+from datetime import datetime, time, timedelta
+
 from django.db.models import Sum
 from django.utils import timezone
 
-from datetime import datetime, time, timedelta
 from app.models import Payment
 
 

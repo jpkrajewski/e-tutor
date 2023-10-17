@@ -3,7 +3,7 @@
 Scroll down for Screenshots!
 
 ## Description
-This is a tutoring app that allows tutors to add their students to the system, create lessons, send reminder through email. The app has also calendar and tracks payments for the tutor. The interactive whiteboard with private lessons room is included. 
+This is a tutoring app that allows tutors to add their students to the system, create lessons, send reminder through email. The app has also calendar and tracks payments for the tutor. The interactive whiteboard with private lessons room is included.
 
 ## Stack
 - Django
@@ -75,5 +75,3 @@ This is a tutoring app that allows tutors to add their students to the system, c
 - Choose to send reminder email
 
 ![Create lesson](readme_images/create_lesson.png)
-
-# Project is being refactored in private repository to use NoSQL and FastAPI for ease of deployment and scalability

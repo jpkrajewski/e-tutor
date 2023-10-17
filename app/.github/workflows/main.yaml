@@ -42,6 +42,4 @@ jobs:
           CSRF_TRUSTED_ORIGINS: "https://127.0.0.1"
           REDIS_URL: ${{ secrets.REDIS_URL }}
         run: |
-          python manage.py test
-
-
+          python manage.py test app

@@ -1,10 +1,11 @@
-from django.db import models
-from django.contrib.auth.models import User
 from datetime import datetime, timedelta
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.translation import gettext_lazy
-from django.conf import settings
+from django.utils.translation import gettext_lazy as _
 
 
 class Tutor(models.Model):
@@ -36,7 +37,7 @@ class Payment(models.Model):
     PAID = "paid"
     DUE = "due"
 
-    STATUS = [(PAID, gettext_lazy("Paid")), (DUE, gettext_lazy("Payment due"))]
+    STATUS = [(PAID, _("Paid")), (DUE, _("Payment due"))]
 
     lesson_date = models.DateTimeField()
     amount = models.PositiveIntegerField(null=False, blank=False)
@@ -67,9 +68,9 @@ class Lesson(models.Model):
     AT_CLIENTS = "Client's"
     AT_TUTORS = "Tutor's"
     PLACE = [
-        (ONLINE, gettext_lazy("Online")),
-        (AT_CLIENTS, gettext_lazy("Client's")),
-        (AT_TUTORS, gettext_lazy("Tutor's")),
+        (ONLINE, _("Online")),
+        (AT_CLIENTS, _("Client's")),
+        (AT_TUTORS, _("Tutor's")),
     ]
     subject = models.CharField(max_length=50)
     place = models.CharField(max_length=30, choices=PLACE, default=ONLINE)
